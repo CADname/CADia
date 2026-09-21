@@ -1,0 +1,1 @@
+Create a right-hand helical gear with module 2, 30 teeth, a pressure angle of 20°, a helix angle of 20°, and a face width of 18 mm. Create a 15 mm bore at the center.

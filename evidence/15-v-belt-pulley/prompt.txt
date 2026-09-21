@@ -1,0 +1,1 @@
+Create a double-groove V-belt pulley with an outer diameter of 100 mm, a width of 32 mm, and a shaft bore of Ø20 mm. The V-groove angle should be 40°, and the central hub should have an outer diameter of 40 mm and a length of 35 mm. Add a 6 mm keyway to the shaft bore.

@@ -1,0 +1,1 @@
+Create a disc cam with a diameter of 60 mm and a thickness of 12 mm. The shaft hole should have a diameter of 12 mm and be positioned with an eccentricity of 8 mm from the center of the disc. Add a 4 mm wide keyway to the shaft hole and apply a 1 mm chamfer to the outer edge.

@@ -1,0 +1,89 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cadia_hackathon}
+      POSTGRES_USER: ${POSTGRES_USER:-cadia_hackathon}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cadia_hackathon} -d ${POSTGRES_DB:-cadia_hackathon}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  app:
+    build:
+      context: .
+      args:
+        CODEX_CLI_VERSION: "${CODEX_CLI_VERSION:-0.154.0}"
+        CADIA_UID: "${CADIA_UID:-10001}"
+        CADIA_GID: "${CADIA_GID:-10001}"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NEXIS_ENV: production
+      NEXIS_DATA_ROOT: /data
+      NEXIS_SESSION_SECRET: ${NEXIS_SESSION_SECRET:?Set NEXIS_SESSION_SECRET in .env}
+      NEXIS_COOKIE_SECURE: "${NEXIS_COOKIE_SECURE:-false}"
+      NEXIS_CORS_ORIGINS: ${NEXIS_CORS_ORIGINS:-http://localhost:8000}
+      NEXIS_ALLOWED_HOSTS: ${NEXIS_ALLOWED_HOSTS:-localhost,127.0.0.1}
+      NEXIS_AI_PROVIDER: ${NEXIS_AI_PROVIDER:-app_server}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-cadia_hackathon}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-cadia_hackathon}
+      CODEX_APP_SERVER_BIN: /usr/local/bin/codex
+      CODEX_PROCESS_IDLE_SECONDS: ${CODEX_PROCESS_IDLE_SECONDS:-1800}
+      NEXIS_MAX_CODEX_PROCESSES: ${NEXIS_MAX_CODEX_PROCESSES:-8}
+      NEXIS_MAX_CONCURRENT_AI_TURNS: ${NEXIS_MAX_CONCURRENT_AI_TURNS:-2}
+      CAD_ENGINE_IDLE_SECONDS: ${CAD_ENGINE_IDLE_SECONDS:-1800}
+      NEXIS_MAX_UPLOAD_BYTES: ${NEXIS_MAX_UPLOAD_BYTES:-104857600}
+      NEXIS_MESH_TOLERANCE: ${NEXIS_MESH_TOLERANCE:-0.08}
+      NEXIS_EDGE_TOLERANCE: ${NEXIS_EDGE_TOLERANCE:-0.12}
+      NEXIS_PREFERRED_MODELS: ${NEXIS_PREFERRED_MODELS:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_API_MODEL: ${OPENAI_API_MODEL:-}
+      OPENAI_API_BASE: ${OPENAI_API_BASE:-https://api.openai.com/v1}
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+      GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI:-https://app.cadia.co.kr/api/auth/google/callback}
+      GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID:-}
+      GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET:-}
+      GITHUB_OAUTH_REDIRECT_URI: ${GITHUB_OAUTH_REDIRECT_URI:-https://app.cadia.co.kr/api/ai/copilot/callback}
+      CADIA_AI_AUTO_FALLBACK: "${CADIA_AI_AUTO_FALLBACK:-true}"
+      BIMWRIGHT_INVENTOR_EXPORT_ROOT: ${BIMWRIGHT_INVENTOR_EXPORT_ROOT:-/data/projects}
+      CADIA_SLICER_BACKEND: ${CADIA_SLICER_BACKEND:-prusa}
+      CADIA_SLICER_BIN: ${CADIA_SLICER_BIN:-/usr/bin/prusa-slicer}
+      CADIA_SLICER_PROFILE: ${CADIA_SLICER_PROFILE:-/app/web/backend/standalonecad_web/manufacturing/profiles/generic_pla_220.ini}
+      CADIA_CURA_DEFINITION: ${CADIA_CURA_DEFINITION:-}
+      CADIA_SLICER_TIMEOUT_SECONDS: ${CADIA_SLICER_TIMEOUT_SECONDS:-300}
+      CADIA_OCTOPRINT_URL: ${CADIA_OCTOPRINT_URL:-}
+      CADIA_OCTOPRINT_API_KEY: ${CADIA_OCTOPRINT_API_KEY:-}
+      CADIA_MOONRAKER_URL: ${CADIA_MOONRAKER_URL:-}
+      CADIA_MOONRAKER_API_KEY: ${CADIA_MOONRAKER_API_KEY:-}
+      CADIA_ALLOW_MACHINE_EXECUTION: "${CADIA_ALLOW_MACHINE_EXECUTION:-false}"
+
+
+
+
+
+
+
+
+    volumes:
+      - cad_data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    stop_grace_period: 30s
+    networks: [internal]
+
+volumes:
+  postgres_data:
+  cad_data:
+
+networks:
+  internal:
+    driver: bridge

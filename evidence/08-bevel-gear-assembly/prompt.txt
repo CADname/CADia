@@ -1,0 +1,1 @@
+Create one straight bevel gear for two shafts intersecting at 90°. Use module 2, 24 teeth, a pressure angle of 20°, and a pitch cone angle of 45°. Create another bevel gear of the same size and assemble them so that they mesh at 90°. The center bore diameter should be 12 mm.

@@ -1,0 +1,1 @@
+Create two spur gears with module 2 and 20 and 40 teeth respectively as separate parts, position them at the correct center distance, and assemble them so that they mesh with each other. The axes of the two gears must be parallel.

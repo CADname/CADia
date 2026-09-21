@@ -1,0 +1,1 @@
+Create a simple bearing housing that can accommodate a 6204 ball bearing with an outer diameter of 47 mm and a width of 14 mm. Create a cylindrical seat for the bearing outer ring and retaining flanges on both sides, and place two mounting holes in the base for M8 bolts.

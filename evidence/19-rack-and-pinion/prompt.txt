@@ -1,0 +1,1 @@
+Create a straight rack gear with module 2, a pressure angle of 20°, a length of 200 mm, a width of 20 mm, and a height of 20 mm. Create a standard spur pinion with module 2, 20 teeth, a pressure angle of 20°, a face width of 15 mm, and a center bore of Ø12 mm, and assemble them together.

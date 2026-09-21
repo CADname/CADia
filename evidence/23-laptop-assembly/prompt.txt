@@ -1,0 +1,1 @@
+Model a laptop and assemble it so that it can functionally open and close.

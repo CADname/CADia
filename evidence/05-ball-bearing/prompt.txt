@@ -1,0 +1,1 @@
+Create a single-row ball bearing with an inner diameter of 20 mm, an outer diameter of 47 mm, and a width of 14 mm. Arrange 8 balls at equal intervals.

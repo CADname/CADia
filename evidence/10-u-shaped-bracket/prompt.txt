@@ -1,0 +1,1 @@
+Create a U-shaped bracket. The base is 100 mm long, 60 mm wide and 8 mm thick. Add two 8 mm thick, 50 mm high side walls. Create Ø20 through holes in the two walls that share the same axis.

@@ -1,0 +1,1 @@
+Create a clock and assemble the hour hand, second hand, and minute hand so that all three can rotate properly. Also add the numbers 1 through 12 to the clock.

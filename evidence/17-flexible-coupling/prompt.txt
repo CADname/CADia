@@ -1,0 +1,1 @@
+Create a flexible coupling that connects two shafts with a diameter of 10 mm. Make the outer diameter 25 mm and the overall length 30 mm.

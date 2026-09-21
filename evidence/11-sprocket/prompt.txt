@@ -1,0 +1,1 @@
+Create a sprocket with a chain pitch of 12.7 mm, 20 teeth, a thickness of 8 mm, and a center bore of Ø20 mm.

@@ -1,0 +1,1 @@
+Create an extension spring with a wire diameter of 2.5 mm, a coil diameter of 25 mm, and a body length of 70 mm.

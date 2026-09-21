@@ -1,0 +1,112 @@
+{
+  "format": "StandaloneCAD-MCP",
+  "version": 2,
+  "title": "Untitled",
+  "doc_type": "part",
+  "units": "mm",
+  "material": "Generic",
+  "parameters": {},
+  "properties": {
+    "Part Number": "",
+    "Description": "",
+    "Author": ""
+  },
+  "sketches": {
+    "Sketch1": {
+      "name": "Sketch1",
+      "plane": "XY",
+      "entities": [
+        {
+          "kind": "line",
+          "tag": "e1",
+          "data": {
+            "x1": -40,
+            "y1": -30,
+            "x2": 40,
+            "y2": -30
+          }
+        },
+        {
+          "kind": "line",
+          "tag": "e2",
+          "data": {
+            "x1": 40,
+            "y1": -30,
+            "x2": 40,
+            "y2": 30
+          }
+        },
+        {
+          "kind": "line",
+          "tag": "e3",
+          "data": {
+            "x1": 40,
+            "y1": 30,
+            "x2": -40,
+            "y2": 30
+          }
+        },
+        {
+          "kind": "line",
+          "tag": "e4",
+          "data": {
+            "x1": -40,
+            "y1": 30,
+            "x2": -40,
+            "y2": -30
+          }
+        }
+      ],
+      "constraints": [],
+      "dimensions": [],
+      "closed": true
+    }
+  },
+  "work_planes": {},
+  "work_axes": {},
+  "imates": {},
+  "features": [
+    {
+      "name": "Extrude1",
+      "kind": "extrude",
+      "params": {
+        "sketch_name": "Sketch1",
+        "distance_mm": 8,
+        "operation": "join",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "name": "Hole2",
+      "kind": "hole",
+      "params": {
+        "face": {
+          "kind": "planar",
+          "normal": "+Z",
+          "extreme": "max"
+        },
+        "points_mm": [
+          [
+            0,
+            0,
+            8
+          ]
+        ],
+        "diameter_mm": 10,
+        "kind": "drilled",
+        "through": true,
+        "depth_mm": null,
+        "cbore_diameter_mm": null,
+        "cbore_depth_mm": null,
+        "csink_diameter_mm": null,
+        "csink_angle_deg": 82
+      },
+      "operation": "cut"
+    }
+  ],
+  "occurrences": {},
+  "constraints": [],
+  "view_orientation": "iso_top_right",
+  "import_source": null
+}

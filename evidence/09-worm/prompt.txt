@@ -1,0 +1,1 @@
+Create a single-start right-hand worm for a shaft diameter of approximately 20 mm. Use an axial module of 2 mm and a pressure angle of 20°, and make the total worm length 70 mm. Add cylindrical shafts 20 mm long to both sides.

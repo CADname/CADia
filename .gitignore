@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.nexis-data/
+.env
+.env.*
+!.env.example
+web/frontend/node_modules/
+web/frontend/dist/
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+validation/raw/
+
+# Local backup directories
+.*-backup-*/
+.*-backups/

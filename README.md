@@ -1,0 +1,268 @@
+# CADia — AI-Native Editable CAD
+
+> Create, import, select, and continuously modify real B-Rep CAD with natural language.
+
+**Live demo:** https://app.cadia.co.kr  
+**Hackathon:** InfinityX Global Hackathon 2K26  
+**Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)  
+**Modeling evidence:** [`evidence/`](./evidence/README.md)  
+**Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)  
+**Demo script:** [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md)
+
+CADia is an AI-native CAD system for creating and editing real B-Rep models. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. A user can start from a natural-language request or existing geometry, then continue working through follow-up instructions and direct face/edge/object selection.
+
+The AI handles intent and tool planning; typed CAD operations execute against an OCCT/CadQuery kernel that owns the geometry and model state. The same model can be modified repeatedly through parametric rebuilds or direct B-Rep edits, verified after operations, and exported for downstream use.
+
+
+## For judges
+
+The fastest evaluation path is the live guest workspace: open the demo, click **Launch CADia**, inspect the CAD workspace and selection tools, then optionally connect a supported AI provider for a live creation-and-editing run. The concise walkthrough is in [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md).
+
+A representative two-step modeling flow is:
+
+```text
+Create an 80 x 60 x 8 mm mounting plate with four 6 mm holes positioned 10 mm from each corner.
+```
+
+then, on the same model:
+
+```text
+Change the plate thickness to 12 mm and the four holes to 8 mm diameter while preserving their offsets.
+```
+
+The [`evidence/`](./evidence/README.md) directory contains 20 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
+
+
+## Modeling evidence
+
+The [`evidence/`](./evidence/README.md) directory contains **20 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
+
+These files provide concrete modeling evidence for CADia's implemented capabilities.
+
+
+### Example output gallery
+
+| Spur gear | U-shaped bracket | Laptop assembly | Clock assembly |
+| --- | --- | --- | --- |
+| ![Spur gear](./evidence/01-spur-gear/preview.png) | ![U-shaped bracket](./evidence/10-u-shaped-bracket/preview.png) | ![Laptop assembly](./evidence/23-laptop-assembly/preview.png) | ![Clock assembly](./evidence/24-clock-assembly/preview.png) |
+
+## Why CADia is different
+
+Many generative 3D workflows focus on visual or mesh output. CADia is built around editable CAD state and downstream CAD handoff.
+
+| Capability | CADia approach |
+| --- | --- |
+| Geometry | Boundary Representation (B-Rep) through OCCT/CadQuery |
+| Start point | Create a new model or continue from existing CAD geometry |
+| AI control | Structured, typed CAD operations instead of free-form mesh synthesis |
+| Continuous editing | Follow-up requests modify the current model instead of forcing one-shot regeneration |
+| Direct selection | Face, edge, object and feature-aware editing workflows |
+| History-aware editing | When a selected change maps unambiguously to model history, update the driving feature/parameter and rebuild downstream geometry |
+| Direct B-Rep editing | Use direct geometry editing paths when history-based modification is unavailable or inappropriate |
+| Topology | Persistent face/edge descriptors with rebinding after topology changes; ambiguous matches are rejected |
+| Reliability | Verification, atomic rollback and bounded automatic recovery |
+| Broader CAD workflows | Parametric features, sketches, assemblies, constraints, joints and standard-component generators |
+| Downstream handoff | STEP, STL, 3MF, 3D-print DFM and slicing/G-code workflows |
+
+## The core idea
+
+```text
+Natural language + direct geometric selection
+        |
+        v
+AI planning / structured tool selection
+        |
+        v
+Typed CAD operations (project-scoped MCP surface)
+        |
+        v
+OCCT / CadQuery B-Rep kernel
+        |
+        v
+Verification + atomic rollback + recovery
+        |
+        v
+Editable parametric model + feature history
+        |
+        v
+Assembly / STEP / manufacturing workflow
+```
+
+The language model is not the geometry kernel. It interprets the user's design intent and chooses structured operations; the deterministic CAD system performs those operations and owns the model state.
+
+### Full-request planning with deterministic execution
+
+Free-form chat is interpreted against the complete user request, current CAD state, selection context and typed tool catalog before CAD operations are chosen. Plans are schema-validated before execution, and the resulting typed operations run through deterministic geometry generators and the CAD kernel.
+
+## Technical highlights
+
+### Real parametric B-Rep
+
+CADia uses Open CASCADE through CadQuery/OCP. The model is composed of CAD faces, edges, features and parameters rather than being treated as a final triangle mesh.
+
+### Selection-aware topology tracking
+
+The browser passes selected faces, edges, objects and features back to the CAD runtime so edits can target explicit geometry. CADia stores topology descriptors for selected entities, rebinds references after model changes using geometric and history context, and rejects ambiguous matches.
+
+### History-aware parametric modification
+
+For models with usable feature history, CADia can trace an unambiguous selected edit back to the originating feature or driving parameter. The system updates that parameter/feature and rebuilds downstream geometry so the change remains part of the parametric model rather than becoming an isolated visual patch.
+
+### Direct editing beyond feature history
+
+For imported geometry or operations without a usable history path, CADia supports direct B-Rep editing for applicable face/edge operations. This lets the same interaction model span native parametric documents and directly editable B-Rep geometry.
+
+### Continuous follow-up modification
+
+A modeling session is not treated as a one-shot prompt. Users can create or open a model, make a follow-up request, select a particular region, modify it again, inspect the result, and continue from the same CAD state.
+
+### How a CAD edit is resolved
+
+A typical edit passes through the following path:
+
+1. **Identify intent and target.** The request can use natural language, a direct viewport selection, or both.
+2. **Resolve CAD topology.** Face/edge/object selections are connected back to B-Rep topology rather than being treated only as rendered triangles.
+3. **Prefer a history-aware edit when it is unambiguous.** If the selected geometry can be traced unambiguously to an originating feature or driving parameter, CADia changes that source value/feature.
+4. **Rebuild downstream geometry.** Dependent features are regenerated from the changed model state.
+5. **Use direct B-Rep editing when a history path is not appropriate.** Applicable face/edge operations can modify the B-Rep directly.
+6. **Rebind topology references.** Persistent descriptors are used to reconnect selections after the shape changes; ambiguous matches are rejected.
+7. **Verify the transaction.** If an operation leaves the model invalid, rollback/recovery paths protect the last usable state.
+
+This hybrid path is what lets CADia focus on **continued editing of real CAD**, not only first-pass text-to-3D generation.
+
+### Verification and recovery
+
+Modeling operations use transaction boundaries, verification, rollback and bounded recovery to preserve the last valid model state across repeated edits.
+
+### Assemblies and joints
+
+The standalone OCCT backend supports part placement, assembly relationships, BOM/constraint queries, interference/minimum-distance workflows, and Inventor-style joint semantics including rigid, rotational, slider, cylindrical, planar and ball joints.
+
+### 118 project-scoped CAD tools
+
+The AI-facing web gateway exposes a 118-tool project-scoped surface: a 58-tool compatibility contract, 10 assembly-joint extensions, and 50 native CADia extensions. The tool surface reaches the same underlying CAD executor/core rather than reimplementing CAD behavior in each AI provider.
+
+### Multi-provider AI without multiple CAD cores
+
+CADia can connect ChatGPT/Codex, GitHub Copilot, OpenAI API, Claude or Gemini. Provider integration is separated from the CAD core; every supported provider ultimately operates the same CAD model and execution surface.
+
+### Manufacturing path
+
+The web application includes STEP AP242, STL and 3MF export, 3D-print DFM checks, and PrusaSlicer-based G-code generation.
+
+## Try it
+
+1. Open https://app.cadia.co.kr.
+2. Click **Launch CADia**. No CADia registration is required for the guest workspace.
+3. Inspect the CAD workspace, feature tree, selection modes and export controls.
+4. Click **Connect AI** to run live AI modeling with a supported provider.
+5. Enter a design request, then make a follow-up modification to the same model.
+
+Live AI modeling uses the selected provider connection. The guest CAD workspace can also be inspected without connecting an AI account.
+
+## Example prompts
+
+**Precision mounting plate**
+
+```text
+Create an 80 x 60 x 8 mm mounting plate with four 6 mm holes positioned 10 mm from each corner.
+```
+
+Follow-up:
+
+```text
+Change the plate thickness to 12 mm and the four holes to 8 mm diameter while preserving their offsets.
+```
+
+**Spur gear**
+
+```text
+Create a spur gear with module 2, 25 teeth, a 20 mm face width, a 15 mm bore, and a 20 degree pressure angle.
+```
+
+**Lead screw and nut**
+
+```text
+Create a lead screw and matching nut with a 20 mm nominal diameter, 4 mm pitch, and 30 degree thread angle.
+```
+
+**Piston assembly**
+
+```text
+Create a piston and cylinder assembly with a 30 mm bore, 40 mm stroke, and a 10 mm rod.
+```
+
+## System architecture
+
+```text
+Browser (React + Three.js)
+        |
+     HTTPS
+        v
+Nginx -> FastAPI application
+              |
+              +-> PostgreSQL project/auth state
+              +-> per-project CAD runtime
+              +-> OCCT / CadQuery geometry kernel
+              +-> verifier / recovery / topology layer
+              +-> per-user AI provider connection
+```
+
+The browser mesh is only a visualization of the CAD state; it is not the source of truth. Persistent face/edge IDs are carried from the CAD runtime into browser geometry so a click in the viewport can participate in later CAD edits.
+
+## Technology stack
+
+- CADia version: 2026.09.15
+- CAD: Open CASCADE / OCP / CadQuery
+- Backend: Python, FastAPI, SQLAlchemy, PostgreSQL
+- Frontend: React, TypeScript, Three.js, Vite
+- AI integration: Codex App Server, GitHub Copilot SDK, OpenAI API, Anthropic API, Gemini API
+- Tool interface: MCP-compatible project-scoped CAD gateway
+- Deployment: Docker Compose, Nginx, AWS Lightsail
+- Manufacturing: STEP AP242 export, STL/3MF, 3D-print DFM, PrusaSlicer-based slicing/G-code
+
+## Repository map
+
+```text
+src/standalonecad/       CAD engine package (internal Python namespace), history, topology, assemblies, joints, verifier/recovery
+web/backend/             FastAPI, auth, projects, AI providers, manufacturing and MCP gateway
+web/frontend/            React/Three.js judging and CAD interface
+vendor/                  Third-party compatibility reference material
+tools/                   Web/MCP bridges
+scripts/                 Local utilities
+deploy/                  Deployment and Nginx helpers
+examples/                Example CAD/STEP artifacts
+docs/                    Judge guide, architecture and demo script
+SUBMISSION_SCOPE.md      InfinityX submission scope and submitted capability summary
+CORE_SHA256.txt          Submitted CAD-core SHA-256 manifest
+```
+
+## Run locally with Docker
+
+Prerequisites: Docker Engine with Docker Compose.
+
+```bash
+cp .env.example .env
+```
+
+Set at least `POSTGRES_PASSWORD` and `NEXIS_SESSION_SECRET` in `.env`, then run:
+
+```bash
+docker compose up --build
+```
+
+The application binds to `127.0.0.1:8000` by default. Production HTTPS/Nginx setup is documented in `DEPLOY_HACKATHON_LIGHTSAIL.md`.
+
+Never commit a real `.env` file or provider credentials.
+
+## Hackathon submission materials
+
+- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
+- [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md) — concise demo-video run of show
+- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
+- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
+- [`CORE_SHA256.txt`](./CORE_SHA256.txt) — CAD-core source hash manifest
+
+## Third-party software
+
+See `THIRD_PARTY.md`. The vendored `bimwright/ipt-mcp` reference material retains its upstream Apache-2.0 license notice. Other dependencies remain subject to their respective upstream licenses.

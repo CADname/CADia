@@ -1,0 +1,1 @@
+Create a rotating shaft with an overall length of 180 mm. The diameter of the central 80 mm section should be 35 mm, and the bearing mounting sections on both sides should have a diameter of 25 mm. Create M20 external threads on both ends, and apply appropriate shaft shoulders and 2 mm fillets to the stepped sections.

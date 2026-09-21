@@ -1,0 +1,1 @@
+Model a simple mechanical pencil shape and determine appropriate dimensions. Also add a mechanical pencil clip and attach it to the body.

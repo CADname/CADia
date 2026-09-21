@@ -1,0 +1,17 @@
+[project]
+name = "cadia-mcp"
+version = "2026.09.15"
+description = "CADia AI parametric CAD with an OCCT/CadQuery core, ipt-mcp compatibility surface, and Design Accelerator mechanical generators"
+requires-python = ">=3.11,<3.13"
+dependencies = ["cadquery==2.8.0", "vtk==9.6.2", "PySide6-Essentials==6.11.2"]
+
+
+[project.optional-dependencies]
+accelerator = ["cq-gears @ https://github.com/meadiode/cq_gears/archive/e73874cf17a25447a99b1e7c22a4d5af38560e9c.zip"]
+web = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "sqlalchemy>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
+  "python-multipart>=0.0.12,<1",
+]
