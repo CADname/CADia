@@ -2,13 +2,15 @@
 
 > Create, import, select, and continuously modify real B-Rep CAD with natural language.
 
-**Live demo:** https://app.cadia.co.kr  
-**Demo Video:** https://youtu.be/L2ocXoW0v_4  
-**Hackathon:** InfinityX Global Hackathon 2K26  
-**Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)  
-**Modeling evidence:** [`evidence/`](./evidence/README.md)  
-**Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)  
+**Live demo:** https://app.cadia.co.kr
+**Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+**Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+**Hackathon:** InfinityX Global Hackathon 2K26
+**Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
+**Modeling evidence:** [`evidence/`](./evidence/README.md)
+**Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 **Demo script:** [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md)
+**Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
 
 CADia is an AI-native CAD system for creating and editing real B-Rep models. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. A user can start from a natural-language request or existing geometry, then continue working through follow-up instructions and direct face/edge/object selection.
 
@@ -18,6 +20,8 @@ The AI handles intent and tool planning; typed CAD operations execute against an
 ## For judges
 
 The fastest evaluation path is the live guest workspace: open the demo, click **Launch CADia**, inspect the CAD workspace and selection tools, then optionally connect a supported AI provider for a live creation-and-editing run. The concise walkthrough is in [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md).
+
+Two complementary demo videos are provided. Demo Video 1 covers CAD creation, assembly, continued modification, and manufacturing handoff. Demo Video 2 focuses on CADia's topology-aware editing workflow: direct B-Rep face and edge selection, history-aware parameter modification, selected-edge fillet and chamfer operations, regeneration, and verification on the same evolving CAD model.
 
 A representative two-step modeling flow is:
 
@@ -259,7 +263,8 @@ Never commit a real `.env` file or provider credentials.
 ## Hackathon submission materials
 
 - [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
-- [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md) — concise demo-video run of show
+- [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md) — concise primary demo-video run of show
+- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
 - [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
 - [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
 - [`CORE_SHA256.txt`](./CORE_SHA256.txt) — CAD-core source hash manifest

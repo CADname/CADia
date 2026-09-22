@@ -1,6 +1,8 @@
 # CADia Demo Script
 
-A concise run of show for the InfinityX demo video. Target: about 3 minutes.
+A concise run of show for the primary InfinityX demo video. Target: about 3 minutes.
+
+For the second demo focused on topology-aware parametric editing and direct face/edge selection, see [`DEMO_02_TOPOLOGY_EDITING.md`](./DEMO_02_TOPOLOGY_EDITING.md).
 
 ## 0:00–0:20 — Problem
 

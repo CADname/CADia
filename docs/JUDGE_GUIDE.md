@@ -2,6 +2,15 @@
 
 CADia is submitted to **InfinityX Global Hackathon 2K26**. This guide is the shortest path to evaluating the working product and the supporting repository evidence.
 
+## Demo videos
+
+- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+
+Demo Video 2 focuses on continued editing of the same B-Rep model. A mechanical mounting bracket is built incrementally and then modified through direct face and edge selection.
+
+The second demo shows a center-hole diameter change from Ø40 mm to Ø50 mm, vertical-plate thickness modification from 8 mm to 12 mm, a selected-edge 5 mm fillet, a selected-edge 3 mm chamfer, B-Rep regeneration, and verification.
+
 ## 1. Open the live product
 
 1. Open https://app.cadia.co.kr.

@@ -18,10 +18,17 @@ Quick access: click **Launch CADia**. No CADia registration is required to inspe
 
 https://github.com/CADname/CADia
 
-## Demo video
+## Demo videos
+
+**Demo Video 1 — creation, assembly, and manufacturing handoff**
 
 https://youtu.be/L2ocXoW0v_4
 
+**Demo Video 2 — topology-aware parametric editing**
+
+https://youtu.be/bsyfQU5MiZ4
+
+Demo Video 2 focuses on direct B-Rep face and edge selection, history-aware parametric modification, selected-edge fillet and chamfer operations, regeneration, and verification on the same evolving CAD model.
 ## Inspiration / problem statement
 
 Modern CAD is powerful, but using it still requires learning many commands, feature operations, constraints, topology references and repetitive editing steps. Generative AI can make 3D content easier to create, but a visually plausible mesh is not the same thing as a reusable CAD model: it may not retain editable dimensions, feature history, persistent topology or a reliable downstream workflow.
