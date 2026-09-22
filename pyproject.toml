@@ -1,7 +1,7 @@
 [project]
 name = "cadia-mcp"
 version = "2026.09.15"
-description = "CADia AI parametric CAD with an OCCT/CadQuery core, ipt-mcp compatibility surface, and Design Accelerator mechanical generators"
+description = "CADia AI parametric CAD with an OCCT/CadQuery core, structured CAD tool interface, and Design Accelerator mechanical generators"
 requires-python = ">=3.11,<3.13"
 dependencies = ["cadquery==2.8.0", "vtk==9.6.2", "PySide6-Essentials==6.11.2"]
 

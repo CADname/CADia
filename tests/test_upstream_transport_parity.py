@@ -93,7 +93,7 @@ def test_bootstrap_has_no_external_upstream_runtime():
     root = Path(__file__).resolve().parents[1]
     checked_text = "\n".join(
         p.read_text(encoding="utf-8", errors="ignore")
-        for p in [root / "Dockerfile", root / "docker-compose.yml", root / "DEPLOY_HACKATHON_LIGHTSAIL.md"]
+        for p in [root / "Dockerfile", root / "docker-compose.yml"]
         if p.exists()
     )
     assert "prepare_upstream_ipt_mcp.py" not in checked_text
@@ -102,5 +102,3 @@ def test_bootstrap_has_no_external_upstream_runtime():
     assert not (root / "src" / "standalonecad" / "original_gateway.py").exists()
     assert not (root / "src" / "standalonecad" / "bridge" / "ipt_compat.py").exists()
     assert not (root / "VERIFY_UPSTREAM_RUNTIME.bat").exists()
-
-

@@ -1,15 +1,5 @@
 # Third-party components
 
-## bimwright/ipt-mcp
-
-- Project: `bimwright/ipt-mcp`
-- Compatibility target in this package: public v0.1.0 contract/runtime checks
-- License: Apache License 2.0
-- The upstream project is an MCP gateway that calls the Autodesk Inventor API; it does not redistribute Inventor binaries or the Inventor SDK.
-- CADia keeps the 58-tool MCP-facing compatibility surface as a reference contract and runs its own OCCT backend.
-- License copy: `vendor/bimwright-ipt-mcp/LICENSE`
-- Integration map: `vendor/bimwright-ipt-mcp/SOURCE_PORT_MAP.md`
-
 ## CadQuery / OCP / Open CASCADE
 
 Used for B-Rep modeling, booleans, sweeps/lofts, tessellation and geometry export. Their respective upstream licenses apply.

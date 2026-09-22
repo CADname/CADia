@@ -1,14 +1,10 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
 
 import pytest
 
 from standalonecad.compat.inventor_semantics import UPSTREAM_HOST_COMMANDS
 from standalonecad.core.engine import CadEngine
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 def _rectangle_part(engine: CadEngine, *, size=10.0, height=10.0):
@@ -17,19 +13,6 @@ def _rectangle_part(engine: CadEngine, *, size=10.0, height=10.0):
     engine.execute("draw_rectangle", {"sketch_name": "Base", "x1": 0, "y1": 0, "x2": size, "y2": size})
     engine.execute("close_sketch", {"sketch_name": "Base"})
     return engine.execute("extrude", {"sketch_name": "Base", "distance_mm": height, "operation": "join", "direction": "positive"})
-
-
-def test_pinned_58_surface_partitions_into_49_host_commands_and_9_server_tools():
-    manifest = json.loads((ROOT / "vendor/bimwright-ipt-mcp/internal-regression-tool-surface-58.json").read_text(encoding="utf-8"))
-    names = {x["name"].removeprefix("inventor_") for x in manifest}
-    server_side = {
-        "list_available_targets", "get_current_target", "switch_target",
-        "list_baked_tools", "list_bake_suggestions", "create_bake_issue_draft",
-        "run_baked_tool", "accept_bake_suggestion", "dismiss_bake_suggestion",
-    }
-    assert len(names) == 58
-    assert names - server_side == set(UPSTREAM_HOST_COMMANDS)
-    assert len(UPSTREAM_HOST_COMMANDS) == 49
 
 
 def test_upstream_extrude_semantics_enrich_response_and_build_expected_body():

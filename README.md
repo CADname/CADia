@@ -1,15 +1,14 @@
-# CADia — AI-Native Editable CAD
+# CADia ??AI-Native Editable CAD
 
 > Create, import, select, and continuously modify real B-Rep CAD with natural language.
 
 **Live demo:** https://app.cadia.co.kr
-**Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
-**Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+**Demo Video 1 ??creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+**Demo Video 2 ??topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
 **Hackathon:** InfinityX Global Hackathon 2K26
 **Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
 **Modeling evidence:** [`evidence/`](./evidence/README.md)
 **Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-**Demo script:** [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md)
 **Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
 
 CADia is an AI-native CAD system for creating and editing real B-Rep models. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. A user can start from a natural-language request or existing geometry, then continue working through follow-up instructions and direct face/edge/object selection.
@@ -141,11 +140,11 @@ Modeling operations use transaction boundaries, verification, rollback and bound
 
 ### Assemblies and joints
 
-The standalone OCCT backend supports part placement, assembly relationships, BOM/constraint queries, interference/minimum-distance workflows, and Inventor-style joint semantics including rigid, rotational, slider, cylindrical, planar and ball joints.
+The standalone OCCT backend supports part placement, assembly relationships, BOM/constraint queries, interference/minimum-distance workflows, and joint semantics including rigid, rotational, slider, cylindrical, planar and ball joints.
 
 ### 118 project-scoped CAD tools
 
-The AI-facing web gateway exposes a 118-tool project-scoped surface: a 58-tool compatibility contract, 10 assembly-joint extensions, and 50 native CADia extensions. The tool surface reaches the same underlying CAD executor/core rather than reimplementing CAD behavior in each AI provider.
+The AI-facing web gateway exposes 118 project-scoped CAD operations through the same CADia execution core. The tool surface reaches the same underlying CAD executor/core rather than reimplementing CAD behavior in each AI provider.
 
 ### Multi-provider AI without multiple CAD cores
 
@@ -232,14 +231,11 @@ The browser mesh is only a visualization of the CAD state; it is not the source 
 src/standalonecad/       CAD engine package (internal Python namespace), history, topology, assemblies, joints, verifier/recovery
 web/backend/             FastAPI, auth, projects, AI providers, manufacturing and MCP gateway
 web/frontend/            React/Three.js judging and CAD interface
-vendor/                  Third-party compatibility reference material
 tools/                   Web/MCP bridges
 scripts/                 Local utilities
 deploy/                  Deployment and Nginx helpers
-examples/                Example CAD/STEP artifacts
-docs/                    Judge guide, architecture and demo script
+docs/                    Judge guide, architecture and topology-editing demo
 SUBMISSION_SCOPE.md      InfinityX submission scope and submitted capability summary
-CORE_SHA256.txt          Submitted CAD-core SHA-256 manifest
 ```
 
 ## Run locally with Docker
@@ -256,19 +252,15 @@ Set at least `POSTGRES_PASSWORD` and `NEXIS_SESSION_SECRET` in `.env`, then run:
 docker compose up --build
 ```
 
-The application binds to `127.0.0.1:8000` by default. Production HTTPS/Nginx setup is documented in `DEPLOY_HACKATHON_LIGHTSAIL.md`.
+The application binds to `127.0.0.1:8000` by default.
 
 Never commit a real `.env` file or provider credentials.
 
 ## Hackathon submission materials
 
-- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
-- [`docs/DEMO_SCRIPT.md`](./docs/DEMO_SCRIPT.md) — concise primary demo-video run of show
-- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
-- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
-- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
-- [`CORE_SHA256.txt`](./CORE_SHA256.txt) — CAD-core source hash manifest
+- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) ??short evaluation path for judges
+- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) ??topology-aware parametric editing demo
+- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) ??Devpost submission copy
+- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) ??submitted capability scope and evaluation summary
 
 ## Third-party software
-
-See `THIRD_PARTY.md`. The vendored `bimwright/ipt-mcp` reference material retains its upstream Apache-2.0 license notice. Other dependencies remain subject to their respective upstream licenses.

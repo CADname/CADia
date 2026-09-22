@@ -47,7 +47,6 @@ CADia is an AI-native CAD system for creating, editing, and continuously modifyi
 - Demo Video 2 — topology-aware parametric editing: `https://youtu.be/bsyfQU5MiZ4`
 - Judge path: `docs/JUDGE_GUIDE.md`
 - Architecture: `docs/ARCHITECTURE.md`
-- Primary demo run of show: `docs/DEMO_SCRIPT.md`
 - Demo 2 topology-aware editing workflow: `docs/DEMO_02_TOPOLOGY_EDITING.md`
 - Saved modeling evidence: `evidence/`
 - Devpost copy: `DEVPOST_SUBMISSION.md`

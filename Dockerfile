@@ -47,7 +47,6 @@ RUN pip install --no-cache-dir -r requirements-web.txt -r requirements_accelerat
     && chmod -R a+rX /opt/github-copilot-sdk
 
 COPY src/ ./src/
-COPY vendor/ ./vendor/
 COPY tools/ ./tools/
 COPY scripts/ ./scripts/
 COPY web/backend/ ./web/backend/
