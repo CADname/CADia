@@ -1,10 +1,10 @@
-# CADia ??AI-Native Editable CAD
+# CADia — AI-Native Editable CAD
 
 > Create, import, select, and continuously modify real B-Rep CAD with natural language.
 
 **Live demo:** https://app.cadia.co.kr
-**Demo Video 1 ??creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
-**Demo Video 2 ??topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+**Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+**Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
 **Hackathon:** InfinityX Global Hackathon 2K26
 **Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
 **Modeling evidence:** [`evidence/`](./evidence/README.md)
@@ -258,9 +258,11 @@ Never commit a real `.env` file or provider credentials.
 
 ## Hackathon submission materials
 
-- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) ??short evaluation path for judges
-- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) ??topology-aware parametric editing demo
-- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) ??Devpost submission copy
-- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) ??submitted capability scope and evaluation summary
+- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
+- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
+- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
+- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
 
 ## Third-party software
+
+See `THIRD_PARTY.md`. Dependencies remain subject to their respective upstream licenses.

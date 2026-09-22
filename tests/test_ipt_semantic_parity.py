@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import pytest
 
-from standalonecad.compat.inventor_semantics import UPSTREAM_HOST_COMMANDS
 from standalonecad.core.engine import CadEngine
 
 

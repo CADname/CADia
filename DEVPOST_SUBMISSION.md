@@ -83,7 +83,7 @@ The editing flow is therefore: **natural language and/or selection -> topology r
 
 The CAD engine is written in Python around Open CASCADE through OCP/CadQuery. It owns the parametric document, feature history, topology records, parameter graph, sketch/feature operations, assembly relationships and verification/recovery behavior.
 
-The web backend uses FastAPI, SQLAlchemy and PostgreSQL. Each project gets a CAD runtime, while AI access is routed through a project-scoped MCP-compatible gateway. The web tool surface contains 118 operations: a 58-tool compatibility contract, 10 assembly-joint extensions and 50 native CADia extensions.
+The web backend uses FastAPI, SQLAlchemy and PostgreSQL. Each project gets a CAD runtime, while AI access is routed through a project-scoped MCP-compatible gateway. The web tool surface exposes 118 project-scoped CAD operations through the same CADia execution core.
 
 The frontend is React, TypeScript and Three.js. Browser geometry is generated from the CAD runtime for visualization and interaction while persistent topology identifiers remain connected to the B-Rep source of truth.
 
