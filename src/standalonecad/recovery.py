@@ -8,9 +8,8 @@ from standalonecad.planning import PlanResult
 from standalonecad.core.inventor_origin import canonical_origin_name, canonical_plane_name
 
 
-# Failure-only recovery.  Nothing in this module is consulted after a successful
-# initial execution.  This is deliberate: the already-working modeling path
-# remains the source of truth, while only explicit failures enter this module.
+# Failure-only recovery. Nothing in this module is consulted after a successful
+# initial execution; only explicit failures enter the recovery path.
 
 _FAILURE_PATTERNS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("runtime_binding", (
@@ -77,7 +76,7 @@ def _failed_step(result: PlanResult) -> dict[str, Any]:
 def _safe_execute(executor, plan: dict[str, Any], on_event=None, progress_span=(25, 90)) -> PlanResult:
     """Convert planner/schema exceptions into the same failure object as kernel failures.
 
-    PlanExecutor already atomically rolls back failures that occur after execution starts.
+    PlanExecutor atomically rolls back failures that occur after execution starts.
     A validation failure happens before any CAD mutation, so no rollback is required.
     """
     try:
@@ -347,7 +346,7 @@ def execute_with_failure_recovery(
     initial_progress_span: tuple[int, int] = (25, 70),
     max_ai_repairs: int = 2,
 ) -> PlanResult:
-    """Execute the existing modeling path unchanged first; enter recovery only after an explicit failure."""
+    """Execute the requested plan first; enter recovery only after an explicit failure."""
     initial = _safe_execute(executor, plan, on_event=on_event, progress_span=initial_progress_span)
     if initial.ok:
         return initial
@@ -379,8 +378,8 @@ def execute_with_failure_recovery(
         current_plan = deterministic
         current_result = det_result
 
-    # Bounded observe -> repair -> execute loop, only after the original path failed.
-    # Every failed execute is already atomically rolled back by PlanExecutor.
+    # Bounded observe -> repair -> execute loop after the requested plan fails.
+    # Every failed execute is atomically rolled back by PlanExecutor.
     for attempt in range(1, max(0, int(max_ai_repairs)) + 1):
         pct0 = 82 + (attempt - 1) * 7
         category = classify_failure(current_result.error)

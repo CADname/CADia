@@ -459,6 +459,25 @@ class AppServerManager:
                 self._items.pop(key).stop()
         return len(stale)
 
+    def drop(self, user_id: str, *, logout: bool = False) -> None:
+        """Stop and forget one user's app-server process.
+
+        Guest cleanup uses ``logout=True`` as a best-effort remote account
+        logout before the isolated on-disk Codex home is removed.
+        """
+        with self._lock:
+            client = self._items.pop(str(user_id), None)
+        if client is None:
+            return
+        try:
+            if logout and client.running:
+                try:
+                    client.logout()
+                except Exception:
+                    pass
+        finally:
+            client.stop()
+
     def close_all(self) -> None:
         with self._lock:
             values = list(self._items.values())

@@ -448,9 +448,8 @@ def _execute_prompt_body(user_id: str, project_id: str, payload: PromptRequest, 
     runtime = runtime_manager.get(user_id, project_id)
     provider_name = selected_provider_name(user_id)
 
-    # Copilot follows the ipt-mcp architecture directly:
-    # Copilot SDK -> CADia project MCP -> existing 118 tools -> existing executor/core.
-    # It does not use the JSON-plan adapter and does not modify the Codex path below.
+    # Copilot SDK -> CADia project MCP -> 118 project tools -> CADia executor/core.
+    # Copilot uses the project MCP transport rather than the JSON-plan adapter.
     if provider_name == "copilot":
         with db_session() as db:
             cfg = provider_ai(db, user_id, "copilot")
@@ -478,12 +477,10 @@ def _execute_prompt_body(user_id: str, project_id: str, payload: PromptRequest, 
                 if active_agents.get(key) is agent:
                     active_agents.pop(key, None)
 
-    # IMPORTANT: this is the original CADia/StandaloneCAD planner path.
-    # In particular, the ChatGPT/Codex branch below is intentionally preserved
-    # with the same DesktopParityCodexAgent, prompt/state, executor, verifier and
-    # failure-recovery flow as before Copilot was added.
+    # ChatGPT/Codex uses CADia's DesktopParityCodexAgent with project state,
+    # executor, verifier, and failure-recovery handling.
     if provider_name == "codex":
-        # ChatGPT/Codex preserves the exact desktop-compatible CodexAgent path.
+        # ChatGPT/Codex uses the desktop-compatible CodexAgent path.
         client = app_server_manager.get(user_id)
         model = payload.model or "gpt-5.6-sol"
         reasoning = payload.effort or "medium"

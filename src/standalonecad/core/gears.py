@@ -102,8 +102,7 @@ def involute_spur_gear(
 
     # Right flank: at the pitch circle the polar angle is exactly pitch_half;
     # toward the tip it decreases.  This is the standard external involute tooth
-    # thickness relationship and prevents the outward-flaring profile that the
-    # previous sign error produced.
+    # thickness relationship and prevents an outward-flaring profile.
     right: list[tuple[float, float]] = []
     base_half = _half_tooth_angle_at_radius(
         rb, pitch_radius=rp, base_radius=rb, teeth=z, backlash=backlash

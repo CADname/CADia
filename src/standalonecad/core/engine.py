@@ -35,8 +35,8 @@ class CadEngine:
         self.on_change=on_change
         self.lock=threading.RLock(); self.revision=0
         self._sessions:list[_DocumentSession]=[]; self._active_session_id:str|None=None
-        # Keep the historical one-click startup experience: one empty Part is open.
-        # Subsequent New Part/New Assembly commands add documents instead of erasing it.
+        # Start with one empty Part. New Part/New Assembly commands add documents
+        # without erasing the active document.
         self._create_document_session('part','Untitled',activate=True,notify=False)
         self.canonical=CanonicalCadCore(self)
         self.inventor=InventorSemanticAdapter(self,self.canonical)
@@ -452,10 +452,8 @@ class CadEngine:
                 d.parameters[p['name']]=Parameter(p['name'],expr,unit,'user'); d.invalidate_parameter_cache(); d.rebuild(); self._changed(); return self.execute('get_parameter',{'name':p['name']})
             if command=='set_parameter':
                 if p['name'] not in d.parameters:raise ValueError(f"Parameter not found: {p['name']}")
-                # Legacy full rebuild always runs first.  Only when it fails do we try a
-                # dependency-proven suffix rebuild reusing the exact pre-change prefix.
-                # This preserves every successful historical parameter-edit path while
-                # rescuing models whose unrelated early history is expensive/brittle.
+                # Run a full rebuild first. If it fails, try a dependency-proven suffix
+                # rebuild that reuses the exact pre-change prefix.
                 baseline={
                     'shape':d.shape,'features':copy.deepcopy(d.features),'feature_cache':list(d._feature_shape_cache),
                     'sketches':copy.deepcopy(d.sketches),'sketches3d':copy.deepcopy(getattr(d,'sketches3d',{})),'work_planes':copy.deepcopy(d.work_planes),
@@ -914,7 +912,7 @@ class CadEngine:
 
             if command=='place_occurrence':
                 if d.doc_type!='assembly':
-                    # Preserve the historical validation/error contract outside assembly context.
+                    # Preserve the validation/error contract outside assembly context.
                     r=d.place_occurrence(p['path'],p.get('grounded',False),p.get('position_mm'),p.get('rotation_deg_xyz'))
                     self._bind_occurrence_to_open_source(d,r['occurrence_name']); self._changed(); return {'ok':True,**r}
                 comp=d.component_definition

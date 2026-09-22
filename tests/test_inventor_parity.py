@@ -113,7 +113,7 @@ def test_common_primitive_prompts_have_no_ai_dependency():
         assert plan is not None and plan["calls"][0]["tool"] == tool
 
 
-def test_v9_keeps_upstream_58_exact_and_adds_native_surface():
+def test_upstream_58_surface_and_native_extensions_are_available():
     base = make_tools("inventor")
     extended = make_tools("cad", extensions=True)
     assert len(base) == 58

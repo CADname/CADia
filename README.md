@@ -216,7 +216,6 @@ The browser mesh is only a visualization of the CAD state; it is not the source 
 
 ## Technology stack
 
-- CADia version: 2026.09.15
 - CAD: Open CASCADE / OCP / CadQuery
 - Backend: Python, FastAPI, SQLAlchemy, PostgreSQL
 - Frontend: React, TypeScript, Three.js, Vite

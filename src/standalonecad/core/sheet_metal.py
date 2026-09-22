@@ -2,9 +2,8 @@ from __future__ import annotations
 
 """Isolated deterministic sheet-metal subsystem.
 
-The normal part/feature engine never calls this module.  It exists so flat-pattern
-export is backed by explicit sheet-metal design intent rather than by the old unsafe
-"largest planar face" shortcut.
+The normal part/feature engine never calls this module. Flat-pattern export is backed
+by explicit sheet-metal design intent rather than a planar-face heuristic.
 
 Scope intentionally implemented here:
 - one rectangular base sheet

@@ -130,8 +130,7 @@ def _explicit_replace_request(text: str) -> bool:
 def _creation_shortcut_allowed(text: str) -> bool:
     """Keep creation shortcuts from hijacking explicit edit/delete requests.
 
-    Existing deterministic generators and their defaults remain unchanged.  This guard
-    only prevents a creation-looking noun/dimension from bypassing the language planner
+    This guard prevents a creation-looking noun/dimension from bypassing the language planner
     when the user explicitly asks to edit, resize, replace, or delete existing geometry.
     Explicit requests to replace the current model remain valid creation shortcuts.
     """
@@ -153,7 +152,7 @@ def _standalone_creation_plan(tool: str, args: dict[str, Any], note: str, user_p
     If the UI supplied document state and the active document already contains geometry
     (or is not a Part), create a new Part first.  ``replace=true`` is reserved for an
     explicit user request to erase/replace the current model.  Calls made by unit tests
-    or external code without CURRENT_STATE keep the historical single-call shape.
+    or external code without CURRENT_STATE use a single-call plan.
     """
     out=dict(args)
     explicit_replace=_explicit_replace_request(user_prompt)
@@ -624,10 +623,8 @@ class PlanExecutor:
 
     @staticmethod
     def _occurrence_identity(name: str) -> tuple[str, int]:
-        # Stored StandaloneCAD component files use `.scad.json`; Path.stem therefore
-        # historically produced names such as `Component.scad`, while Inventor-style plans
-        # commonly refer to the same first instance as `Component:1`.  Normalize only for
-        # lookup; canonical stored names remain untouched for backward compatibility.
+        # Stored component files use `.scad.json`, while Inventor-style plans can refer
+        # to an instance as `Component:1`. Normalize these forms only for lookup.
         m = re.fullmatch(r'(.*?)(?::(\d+))?', str(name).strip())
         base = (m.group(1) if m else str(name)).strip()
         index = int(m.group(2)) if m and m.group(2) else 1

@@ -21,7 +21,7 @@ Use only tool names listed in TOOL_CATALOG.
 Origin/reference rule: follow the public ipt-mcp contract and Inventor origin geometry exactly. inventor_create_sketch uses XY, XZ, or YZ for the three base planes; their canonical Inventor names are XY Plane, XZ Plane, and YZ Plane. Assembly/origin named references must use exact names from CURRENT_STATE.origin_interfaces / CURRENT_STATE.occurrences[].interfaces (equivalent to inventor_list_interfaces), such as XY Plane, XZ Plane, YZ Plane, X Axis, Y Axis, Z Axis, and Center Point. Never invent names such as OriginPlaneXY or OriginAxisZ. For custom work geometry, use its exact current name or persistent face/edge reference.
 Prefer inventor_* tools because they mirror the public ipt-mcp v0.1.0 tool contract.
 Use deterministic cad_* feature/generator tools when they directly match the requested mechanical feature or standard part; prefer those over reconstructing the same thing from many generic sketch calls.
-# CADIA_RESILIENT_LLM_ROUTING_V2
+# CADia resilient LLM routing
 Read the complete USER_REQUEST before choosing tools. Treat cad_* generators as deterministic execution tools, never as keyword routers. A matching noun or dimension pattern may satisfy only one sub-part of a larger request.
 For compound requests, include every explicit component, feature, dimension, count, relation, edit, and preservation constraint in the returned plan. Do not stop after one primitive/generator call if the request explicitly asks for additional geometry or operations.
 Before returning JSON, audit the proposed calls against the complete USER_REQUEST and CURRENT_STATE. Prefer a multi-call plan over silently dropping requirements.
@@ -160,7 +160,7 @@ def _extract_json_object(text: str) -> dict[str, Any]:
     raise ValueError("Planner returned incomplete JSON")
 
 
-# CADIA_RESILIENT_LLM_ROUTING_V2
+# CADia resilient LLM routing
 
 def _validate_planner_plan(plan: dict[str, Any], catalog: list[dict[str, Any]]) -> dict[str, Any]:
     """Validate planner transport/schema facts only; CAD semantics remain in executor/verifier/recovery."""
@@ -249,8 +249,8 @@ def _plan_llm_first_with_retry(agent: Any, user_prompt: str, current_state: dict
                     on_event("progress", {"message": "Planner response invalid; retrying with error feedback", "percent": 14})
                 prompt = _retry_planner_prompt(base_prompt, exc, attempt)
 
-    # Final availability fallback: preserve the historical deterministic path only after
-    # both full-request planner attempts failed. It is NOT used as semantic recovery for a
+    # Final availability fallback: use deterministic direct planning only after both
+    # full-request planner attempts fail. It is NOT used as semantic recovery for a
     # CAD execution failure, so compound requests that reached a valid LLM plan cannot be
     # replaced by a partial primitive after execution fails.
     local = direct_plan(user_prompt, current_state)
@@ -264,10 +264,8 @@ def _plan_llm_first_with_retry(agent: Any, user_prompt: str, current_state: dict
 class CodexAgent:
     """Natural-language planner for the in-app CAD UI.
 
-    v7 intentionally does *not* start nested MCP servers inside Codex. Codex only
-    produces an ipt-mcp-shaped tool plan. CADia validates and executes the
-    plan in-process against the exact open document. This removes the stdio startup
-    failure that could previously make a normal modeling request do nothing.
+    Codex produces a structured tool plan without starting nested MCP servers.
+    CADia validates and executes the plan in-process against the exact open document.
     """
 
     def __init__(
@@ -437,9 +435,9 @@ class CodexAgent:
         Reliability order:
           1) full-request LLM plan
           2) one LLM retry with structured planner error feedback
-          3) legacy deterministic direct_plan only if both planner attempts fail
+          3) deterministic direct_plan only if both planner attempts fail
 
-        CAD execution failures do not trigger direct_plan here; the unchanged recovery.py
+        CAD execution failures do not trigger direct_plan here; recovery.py
         handles them with atomic rollback, deterministic recovery, and bounded AI repairs.
         """
         return _plan_llm_first_with_retry(self, user_prompt, current_state, on_event=on_event)

@@ -20,11 +20,10 @@ class CanonicalOperation:
 
 
 class CanonicalCadCore:
-    """Thin, explicit boundary around the existing hardened CadEngine implementation.
+    """Single canonical execution boundary for the CADia CadEngine.
 
-    v9.3 already had the mature OCCT feature/history implementation.  v10 does not
-    fork or duplicate it; it makes it the single canonical backend and moves upstream
-    Inventor semantics into an adapter in front of this boundary.
+    Modeling adapters normalize requests before dispatch so every supported tool
+    surface reaches the same OCCT/CadQuery feature and history implementation.
     """
 
     def __init__(self, engine):

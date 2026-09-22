@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-# CADIA_RESILIENT_LLM_ROUTING_V2
+# CADia resilient LLM routing
 
 import json
 import os
@@ -16,16 +16,14 @@ from .providers.app_server import AppServerClient
 from .providers.base import AIProvider
 
 
-# The app-server path is used only for authentication/account/model discovery.
-# Actual CAD planning in parity mode is delegated to the *original* CodexAgent
-# through `codex exec`, using the same per-user CODEX_HOME established by the
-# app-server login.  This deliberately preserves the desktop/MCP planner path.
+# The app-server path is used for authentication/account/model discovery.
+# CAD planning runs through CodexAgent with the user's isolated CODEX_HOME.
 
 
 class DesktopParityCodexAgent(CodexAgent):
     """Run the exact desktop CodexAgent against a web user's isolated login.
 
-    Inherited unchanged from standalonecad.codex_agent.CodexAgent:
+    The shared CodexAgent provides:
       - tool catalog construction
       - resilient LLM-first planning with deterministic final fallback
       - PLANNER_PREFIX / REPAIR_PREFIX
@@ -37,7 +35,7 @@ class DesktopParityCodexAgent(CodexAgent):
 
     The only web-specific adaptation is the executable wrapper below, which sets
     CODEX_HOME/HOME to the current web user's isolated authentication directory
-    before exec'ing the same Codex CLI binary.  No CAD/planning algorithm is
+    before executing the Codex CLI binary. No CAD/planning algorithm is
     reimplemented here.
     """
 

@@ -198,9 +198,8 @@ class CadDocument:
         return cq.Plane.named(p) if isinstance(p,str) else p
 
     def build_sketch(self,sm:SketchModel):
-        # Associative projection is a monotonic fallback only.  Normal successful
-        # rebuilds keep the exact legacy copied-projection behavior.  If a legacy
-        # rebuild fails, rebuild() temporarily enables this refresh path and retries.
+        # Associative projection is a fallback only. Normal rebuilds use copied
+        # projections; a failed rebuild may retry with associative refresh enabled.
         if getattr(self,'_association_refresh_enabled',False):
             self._refresh_projected_geometry(sm)
         # Re-apply document-level constraints before every feature rebuild. This keeps
@@ -287,12 +286,10 @@ class CadDocument:
             self._association_refresh_enabled=prior_flag
 
     def rebuild(self,start_index=0):
-        """Rebuild with a strict legacy-first, fallback-only non-regression policy.
+        """Rebuild with a deterministic primary path and bounded associative fallback.
 
-        The established path always runs first.  Only if that path raises does
-        StandaloneCAD retry a full rebuild with associative projected-geometry refresh.
-        A successful legacy rebuild is never replaced, so existing success behavior and
-        performance are preserved while previously failing parametric cases can recover.
+        The primary path runs first. Only if it raises does CADia retry a full rebuild
+        with associative projected-geometry refresh.
         """
         with self.lock:
             if self.doc_type=='assembly': self.rebuild_assembly(); return
@@ -301,15 +298,15 @@ class CadDocument:
                 self._rebuild_once(old,start_index,associative_projection=False)
                 return
             except Exception as legacy_exc:
-                # The failed legacy attempt may have partially replayed history. Reset and
-                # try the strictly additive associative projection fallback.
+                # A failed primary attempt may have partially replayed history. Reset and
+                # try the associative-projection fallback.
                 try:
                     self.shape=self.imported_shape; self.features=[]; self._feature_shape_cache=[]
                     self._rebuild_once(old,0,associative_projection=True)
                     return
                 except Exception:
-                    # Preserve the original legacy error contract; the engine transaction
-                    # layer restores the complete pre-command document snapshot.
+                    # Preserve the primary error contract; the engine transaction layer
+                    # restores the complete pre-command document snapshot.
                     raise legacy_exc
 
     def add_feature(self,kind,name,params,operation='join'):
@@ -1900,9 +1897,8 @@ class CadDocument:
             try:c.health='up_to_date' if constraint_residual(self.occurrences,c,interfaces) < 1e-3 else 'sick'
             except Exception:c.health='sick'
 
-        # Inventor-like simultaneous solve is an additive fallback only.  Existing
-        # assemblies that the legacy deterministic solver already satisfies never enter
-        # this path.  A candidate is committed only on strict residual improvement.
+        # The simultaneous solve is a fallback. A candidate is committed only on strict
+        # residual improvement when the deterministic constraint solve is insufficient.
         if any(c.health!='up_to_date' for c in active):
             try:
                 improved=try_global_constraint_fallback(self.occurrences,active,interfaces)
@@ -1914,13 +1910,11 @@ class CadDocument:
                     except Exception:c.health='sick'
 
     def solve_assembly_constraints(self,passes=12):
-        """Solve assembly relationships without changing the legacy no-joint path.
+        """Solve static constraints and kinematic joints through their appropriate paths.
 
-        Static assemblies containing only the original ipt-mcp mate/flush/insert/angle
-        relationships execute the established solver path byte-for-byte as before.  As
-        soon as a kinematic joint is present, every active legacy constraint and joint
-        is solved simultaneously.  This avoids the former alternating-solver failure
-        mode where one relationship could undo another.
+        Static mate/flush/insert/angle relationships use the deterministic constraint
+        solver. When a kinematic joint is present, every active constraint and joint is
+        solved simultaneously so one relationship cannot undo another.
         """
         if self.doc_type!='assembly':return
         active_joints=[j for j in self.joints if not j.suppressed]

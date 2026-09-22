@@ -48,8 +48,8 @@ def _effective_build_volume(
     build_z: float | None = None,
 ) -> tuple[float, float, float]:
     # Keep DFM and slicing on the same source of truth. Explicit query values
-    # remain available for ad-hoc checks, but omitted values come from the
-    # configured slicer profile instead of the old 256 mm hard-coded default.
+    # remain available for ad-hoc checks; omitted values come from the configured
+    # slicer profile.
     configured = configured_build_volume_mm() or (256.0, 256.0, 256.0)
     return (
         float(build_x) if build_x is not None else configured[0],

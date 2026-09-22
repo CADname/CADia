@@ -242,9 +242,8 @@ class App:
         self._build_diagnostics_tab(self.diag_tab)
 
     def _build_ai_tab(self, parent):
-        # Keep the read-only conversation log and the editable CAD prompt visually
-        # and functionally separate. Earlier builds used nearly identical dark
-        # surfaces, which made the disabled conversation log look like the input.
+        # Keep the read-only conversation log and editable CAD prompt visually and
+        # functionally distinct.
         head = ttk.Frame(parent, style="Panel.TFrame")
         head.pack(fill="x", padx=10, pady=(10, 6))
         ttk.Label(head, text="AI", style="Header.TLabel", font=("Segoe UI Semibold", 12)).pack(side="left")
@@ -421,9 +420,8 @@ class App:
     def _vtk_actor_from_shape(self, cq_shape):
         """Tessellate a CadQuery/OCP shape directly into one VTK actor.
 
-        Direct tessellation avoids the isolated-face STL exporter failure that
-        caused blank viewports in earlier builds and preserves one actor per
-        face for click selection.
+        Direct tessellation preserves one actor per face for click selection and
+        avoids isolated-face STL export dependency.
         """
         from vtkmodules.vtkCommonCore import vtkPoints
         from vtkmodules.vtkCommonDataModel import vtkCellArray, vtkPolyData, vtkTriangle

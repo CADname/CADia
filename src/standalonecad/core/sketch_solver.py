@@ -93,11 +93,8 @@ def enforce_constraint(sm, c, value) -> bool:
 def solve_constraints(sm, value, passes:int=12):
     """Deterministic iterative solver with best-state retention.
 
-    The legacy solver simply returned the geometry from the final enforcement pass.
-    Interdependent constraints can oscillate, so a later pass may actually be worse.
-    We now retain the state with the lowest worst residual (then lowest total residual),
-    which is conservative: supported constraint semantics are unchanged, but a solve
-    cannot end in a state that was measurably worse than an earlier pass.
+    Interdependent constraints can oscillate, so the solver retains the state with the
+    lowest worst residual and then the lowest total residual.
     """
     if not sm.constraints:
         return []
@@ -144,15 +141,15 @@ def solve_constraints(sm, value, passes:int=12):
         err,_=constraint_error(sm,c,value)
         c['directly_enforced']=bool(math.isfinite(err) and err <= 1e-6)
 
-    # Monotonic v2 fallback: the legacy deterministic solver remains authoritative.
-    # A numerical simultaneous solve is attempted ONLY when legacy leaves a sick
+    # The deterministic solver remains authoritative.
+    # A numerical simultaneous solve is attempted ONLY when it leaves a sick
     # constraint/dimension, and its candidate is committed only when it is strictly
-    # better while preserving every relation that legacy already had healthy.
+    # better while preserving every relation that is already healthy.
     # Therefore an already-successful sketch never changes path or geometry.
     try:
         _try_global_fallback(sm, value)
     except Exception:
-        # Fallback is deliberately non-fatal.  Legacy result is already restored.
+        # Fallback is deliberately non-fatal. The deterministic result is restored.
         pass
     for c in sm.constraints:
         err,_=constraint_error(sm,c,value)
@@ -212,7 +209,7 @@ def _dimension_error(sm, dim, value):
     """Residual for the same driving-dimension forms supported by the public tool.
 
     Keeping this intentionally narrow is part of the monotonic policy: unsupported
-    dimension semantics remain on the legacy path instead of being guessed.
+    unsupported dimension semantics remain on the deterministic path instead of being guessed.
     """
     tag=dim.get('entity_id') or dim.get('entityId')
     ent=next((e for e in sm.entities if e.tag==tag),None)
@@ -227,10 +224,10 @@ def _dimension_error(sm, dim, value):
 def _constraint_residual_components(sm,c,value):
     """Signed/smooth residuals used ONLY by the failure-only global fallback.
 
-    Public/legacy constraint semantics stay in ``constraint_error``.  These components
+    Public constraint semantics stay in ``constraint_error``. These components
     give the numerical fallback directional information without changing the accepted
     meaning of a constraint.  Unsupported combinations deliberately fall back to the
-    legacy scalar residual instead of guessing new semantics.
+    scalar residual instead of guessing new semantics.
     """
     ents={e.tag:e for e in sm.entities}; ids=c.get('entity_ids') or c.get('tags') or []; typ=str(c.get('type','')).lower()
     if any(x not in ents for x in ids):return [math.inf]
@@ -394,7 +391,7 @@ def _try_global_fallback(sm,value,iterations=24):
 
     put(best_x)
     candidate_errors=_health_vector(sm,value)
-    # Hard non-regression gate: every relation that legacy had healthy remains healthy.
+    # Hard non-regression gate: every healthy baseline relation remains healthy.
     preserved=True
     for before,after in zip(baseline_errors,candidate_errors):
         if math.isfinite(before) and before<=1e-6 and (not math.isfinite(after) or after>1e-6):
@@ -404,4 +401,3 @@ def _try_global_fallback(sm,value,iterations=24):
         for e,data in zip(sm.entities,baseline_state):e.data=copy.deepcopy(data)
         return False
     return True
-

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-"""Inventor-style object façade over the existing StandaloneCAD backend.
+"""Inventor-style object façade over the CADia modeling backend.
 
-This module is intentionally additive.  It does not replace the existing document,
-feature, assembly, solver, recovery, or strict ipt-mcp command paths.  Instead it
-provides an object model shaped like Inventor's ComponentDefinition / Occurrences /
-ComponentOccurrence / geometry-proxy concepts while delegating all real modeling to
-the already-tested StandaloneCAD backend.
+This module provides an object model shaped like Inventor's ComponentDefinition /
+Occurrences / ComponentOccurrence / geometry-proxy concepts while delegating real
+modeling to the canonical CADia backend.
 """
 
 from dataclasses import dataclass

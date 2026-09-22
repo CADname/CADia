@@ -13,7 +13,7 @@ def test_assembly_mesh_is_built_per_occurrence_with_explicit_owner():
     assert 'edges=list(occurrence_shape.Edges())' in ui
     assert 'erecs=edge_records(occurrence_shape)' in ui
     assert 'tagged["occurrence_name"]=str(occurrence_name)' in ui
-    # The old fragile compound -> occurrence reverse matching must not return.
+    # Avoid fragile compound -> occurrence reverse matching.
     assert 'face_owner_by_hash' not in ui
     assert 'edge_owner_by_hash' not in ui
     assert 'face.isSame(candidate)' not in ui

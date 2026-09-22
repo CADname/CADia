@@ -5,20 +5,23 @@ import hashlib
 import hmac
 import json
 import secrets
+import shutil
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request as UrlRequest, urlopen
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..auth import CurrentUser, clear_session_cookie, hash_password, normalize_email, set_session_cookie, verify_password
+from ..cad_runtime import runtime_manager
 from ..database import get_db
 from ..config import settings
-from ..models import OAuthIdentity, Project, User
+from ..models import AIProviderConnection, McpAccessToken, OAuthIdentity, Project, User
+from ..providers.app_server import app_server_manager
 from ..schemas import LoginRequest, RegisterRequest, UserOut
 
 
@@ -28,6 +31,44 @@ GOOGLE_PKCE_COOKIE = "nexis_google_oauth_pkce"
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_USERINFO_URL = "https://openidconnect.googleapis.com/v1/userinfo"
+
+
+def _is_guest_user(user: User) -> bool:
+    email = str(user.email or "").casefold()
+    return user.password_hash == "guest$disabled" and email.startswith("guest-") and email.endswith("@cadia.local")
+
+
+def _guest_storage_roots(user_id: str) -> tuple:
+    return (
+        settings.data_root / "projects" / user_id,
+        settings.data_root / "codex-users" / user_id,
+    )
+
+
+def _purge_guest_user(user: User, db: Session) -> None:
+    """Permanently remove data owned by one temporary guest account."""
+    if not _is_guest_user(user):
+        raise ValueError("Refusing to purge a non-guest user.")
+
+    user_id = str(user.id)
+    project_ids = list(db.scalars(select(Project.id).where(Project.owner_id == user_id)))
+
+    # Stop in-memory/process state first so no worker can recreate files after cleanup.
+    for project_id in project_ids:
+        runtime_manager.drop(user_id, str(project_id))
+    app_server_manager.drop(user_id, logout=True)
+
+    # Remove all durable CAD and per-user Codex state for this guest.
+    for root in _guest_storage_roots(user_id):
+        if root.exists():
+            shutil.rmtree(root)
+
+    # Do not rely solely on database-specific FK cascade behavior for credentials/tokens.
+    db.execute(delete(McpAccessToken).where(McpAccessToken.owner_id == user_id))
+    db.execute(delete(AIProviderConnection).where(AIProviderConnection.user_id == user_id))
+    db.execute(delete(OAuthIdentity).where(OAuthIdentity.user_id == user_id))
+    db.delete(user)
+    db.commit()
 
 
 def _google_ready() -> None:
@@ -221,7 +262,9 @@ def me(user: CurrentUser):
 
 
 @router.post("/logout", status_code=204)
-def logout(response: Response):
+def logout(response: Response, user: CurrentUser, db: Session = Depends(get_db)):
+    if _is_guest_user(user):
+        _purge_guest_user(user, db)
     clear_session_cookie(response)
     response.status_code = 204
     return None

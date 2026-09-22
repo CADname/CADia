@@ -108,8 +108,7 @@ def test_engine_assembly_dispatch_really_passes_through_facade(monkeypatch, tmp_
 
 def test_facade_routing_preserves_non_assembly_error_contracts():
     e = CadEngine()  # starts on a Part document
-    # Strict ipt-mcp commands are rejected by the unchanged semantic guard before
-    # the backend dispatch, exactly as before façade routing was introduced.
+    # Strict commands are rejected by the semantic guard before backend dispatch.
     for command, params in [
         ('place_occurrence', {'path':'missing.step'}),
         ('add_constraint', {'type':'mate','a_occurrence':None,'a_ref':'XY Plane','b_occurrence':None,'b_ref':'XY Plane'}),
@@ -119,6 +118,6 @@ def test_facade_routing_preserves_non_assembly_error_contracts():
     ]:
         with pytest.raises(ValueError, match='WRONG_DOCUMENT_TYPE|requires an active assembly'):
             e.execute(command, params)
-    # Native joint extension keeps its historical document-level error.
+    # Native joint extension uses the document-level validation error.
     with pytest.raises(ValueError, match='list_joints requires an active assembly'):
         e.execute('list_joints', {})

@@ -37,9 +37,8 @@ class AssemblyJoint:
     """General kinematic relationship for the standalone assembly backend.
 
     The public ipt-mcp 58-tool contract is not changed by this class.  It is used only
-    by the optional Inventor-style assembly-joint extension.  ``a_intent`` and
-    ``b_intent`` are GeometryIntent-like descriptors; old files using only named refs
-    remain fully supported.
+    by the optional Inventor-style assembly-joint extension. ``a_intent`` and
+    ``b_intent`` are GeometryIntent-like descriptors; named refs are also supported.
     """
 
     name: str

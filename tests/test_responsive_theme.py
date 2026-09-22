@@ -45,8 +45,8 @@ def test_dark_and_light_themes_exist_with_dark_default():
     assert 'THEME_COLORS' in ui
 
 
-def test_v92_ui_guarantees_remain_documented_after_kernel_hardening():
-    # The hackathon package carries README/Devpost docs instead of the old desktop release notes.
+def test_ui_guarantees_are_documented_for_submission():
+    # Submission documentation covers the user-facing CAD interaction guarantees.
     docs=((ROOT/'README.md').read_text(encoding='utf-8') + '\n' + (ROOT/'DEVPOST_SUBMISSION.md').read_text(encoding='utf-8'))
     assert 'B-Rep' in docs
     assert 'Face' in docs or 'face' in docs

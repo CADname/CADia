@@ -53,7 +53,7 @@ class InventorSemanticAdapter:
     This is deliberately *not* a second CAD engine and not a fallback.  It performs
     the same role as bimwright's Inventor API handlers: validate/normalize the wire
     contract, then invoke one canonical modeling operation.  The canonical operation
-    is executed by the existing OCCT/CadQuery history engine.
+    is executed by the CADia OCCT/CadQuery history engine.
     """
 
     def __init__(self, engine, canonical_core):
@@ -64,7 +64,7 @@ class InventorSemanticAdapter:
         """Validate a positive model value without destroying parameter expressions.
 
         The public ipt-mcp schemas send numeric millimetres, while StandaloneCAD also
-        permits its existing parameter expressions when the core is called directly.
+        permits parameter expressions when the core is called directly.
         Keeping the original expression preserves parametric rebuild semantics.
         """
         try:

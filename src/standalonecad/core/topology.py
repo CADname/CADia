@@ -46,11 +46,10 @@ def _shape_token(shape, faces, edges, vertices):
 def _topology_index(shape):
     """Build/cache the expensive body topology index once for a CadQuery shape.
 
-    v9.2 used an edge -> every face -> every face-edge scan.  Threaded fasteners and
-    gears can contain thousands of edges, making that O(E*F*Ef) path dominate selection
-    and persistent-reference work.  Here each face edge is bucketed by OCCT hashCode and
-    verified with ``isSame`` before adjacency is recorded.  Hash collisions therefore do
-    not change correctness, while typical work becomes close to O(total face-edges).
+    Threaded fasteners and gears can contain thousands of edges. Each face edge is
+    bucketed by OCCT hashCode and verified with ``isSame`` before adjacency is recorded,
+    keeping typical work close to O(total face-edges) without changing correctness on
+    hash collisions.
 
     The cache is attached to the immutable-ish CadQuery Shape wrapper.  Boolean/modeling
     operations in this engine return a new wrapper, so a new body gets a new cache.  The

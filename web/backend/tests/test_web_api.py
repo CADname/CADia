@@ -3,9 +3,13 @@ from __future__ import annotations
 import json
 
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 from standalonecad_web.cad_runtime import runtime_manager
+from standalonecad_web.config import settings
+from standalonecad_web.database import SessionLocal
 from standalonecad_web.main import app
+from standalonecad_web.models import AIProviderConnection, ChatMessage, McpAccessToken, Project, User
 
 
 def register(client: TestClient, email: str):
@@ -15,6 +19,53 @@ def register(client: TestClient, email: str):
     )
     assert response.status_code == 201, response.text
     return response.json()
+
+
+def test_guest_logout_permanently_removes_guest_data():
+    with TestClient(app) as client:
+        launched = client.post("/api/auth/guest")
+        assert launched.status_code == 201, launched.text
+        guest = launched.json()["user"]
+        project = launched.json()["project"]
+        user_id = guest["id"]
+        project_id = project["id"]
+
+        runtime = runtime_manager.get(user_id, project_id)
+        marker = runtime.root / "guest-cleanup-marker.txt"
+        marker.write_text("temporary guest data", encoding="utf-8")
+        codex_root = settings.data_root / "codex-users" / user_id
+        codex_root.mkdir(parents=True, exist_ok=True)
+        (codex_root / "guest-auth-marker.txt").write_text("temporary auth data", encoding="utf-8")
+
+        with SessionLocal() as db:
+            db.add(ChatMessage(project_id=project_id, role="user", content="temporary guest message"))
+            db.add(AIProviderConnection(user_id=user_id, provider="openai", encrypted_api_key="temporary", selected=True))
+            db.add(McpAccessToken(project_id=project_id, owner_id=user_id, token_hash="guest-cleanup-token", label="temporary"))
+            db.commit()
+
+        logged_out = client.post("/api/auth/logout")
+        assert logged_out.status_code == 204, logged_out.text
+        assert client.get("/api/auth/me").status_code == 401
+        assert not (settings.data_root / "projects" / user_id).exists()
+        assert not codex_root.exists()
+
+        with SessionLocal() as db:
+            assert db.get(User, user_id) is None
+            assert db.get(Project, project_id) is None
+            assert db.scalar(select(ChatMessage).where(ChatMessage.project_id == project_id)) is None
+            assert db.scalar(select(AIProviderConnection).where(AIProviderConnection.user_id == user_id)) is None
+            assert db.scalar(select(McpAccessToken).where(McpAccessToken.owner_id == user_id)) is None
+
+
+def test_registered_user_logout_preserves_account_and_project():
+    with TestClient(app) as client:
+        user = register(client, "persistent-logout@example.com")
+        project = client.post("/api/projects", json={"name": "Persistent project"}).json()
+        assert client.post("/api/auth/logout").status_code == 204
+
+        with SessionLocal() as db:
+            assert db.get(User, user["id"]) is not None
+            assert db.get(Project, project["id"]) is not None
 
 
 def test_auth_project_isolation_and_direct_cad_modeling():

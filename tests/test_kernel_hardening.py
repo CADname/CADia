@@ -61,9 +61,8 @@ def test_complex_gear_edge_topology_no_longer_uses_quadratic_face_scan():
     recs=edge_records(shape)
     elapsed=time.perf_counter()-t0
     assert len(recs)==len(shape.Edges())
-    # v9.2's nested edge->face->face-edge scan took >25 s on this exact 24T body
-    # in the release environment. Keep a generous guard for slower machines while
-    # still catching an accidental return to that algorithm.
+    # Keep a generous guard for slower machines while still catching an accidental
+    # quadratic edge->face->face-edge scan.
     assert elapsed < 8.0, f'24T topology indexing regressed: {elapsed:.3f}s'
 
 

@@ -37,15 +37,15 @@ def _obj_dict(value: Any) -> dict[str, Any]:
 
 
 class CopilotSDKProvider:
-    """GitHub Copilot transport wired to CADia through the existing MCP gateway.
+    """GitHub Copilot transport wired to CADia through the project MCP gateway.
 
     Important architectural boundary:
       * This class does NOT generate CADia plan JSON.
       * It does NOT reimplement any CAD command, planner, verifier, recovery, or
         topology/selection algorithm.
-      * For modeling turns, Copilot receives the existing CADia project MCP
+      * For modeling turns, Copilot receives the CADia project MCP
         server and calls the same 118 tools exposed by ProjectMcpGateway.
-      * Those MCP calls are dispatched by the existing runtime executor.
+      * Those MCP calls are dispatched by the project runtime executor.
 
     This mirrors the ipt-mcp pattern: AI client -> MCP -> CAD tool surface.
     """
@@ -133,7 +133,7 @@ class CopilotSDKProvider:
 
     @staticmethod
     def _tool_names() -> list[str]:
-        # Lazy import avoids changing the existing Codex/web-agent import graph.
+        # Lazy import keeps the Copilot SDK isolated from the Codex/web-agent import graph.
         from ..web_agent import desktop_catalog
 
         names = [str(row.get("name") or "").strip() for row in desktop_catalog()]
@@ -203,8 +203,8 @@ class CopilotSDKProvider:
         bridge = self._bridge_path()
         mcp_token, token_id = self._issue_ephemeral_mcp_token(project_id)
 
-        # The bridge uses the already-existing project-scoped MCP gateway.  No
-        # CAD implementation is duplicated here.
+        # The bridge uses the project-scoped MCP gateway; CAD implementation is not
+        # duplicated in the provider transport.
         mcp_servers = {
             self.MCP_SERVER_NAME: {
                 "type": "local",
@@ -294,8 +294,7 @@ class CopilotSDKProvider:
             return result
 
     def complete_json(self, *args, **kwargs):
-        # Deliberately fail closed if old JSON-planner wiring is accidentally
-        # reintroduced. Copilot must use the MCP path above.
+        # Copilot must use the MCP path above; JSON-plan transport is not accepted.
         raise CopilotSDKError("GitHub Copilot only runs through the CADia MCP path.")
 
     def cancel(self) -> None:

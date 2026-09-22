@@ -84,7 +84,7 @@ export default function AuthScreen({ onAuthenticated }: Props) {
           <button type="button" className="primary wide launch-demo-button" onClick={launchGuest} disabled={guestBusy || busy}>
             {guestBusy ? 'Launching…' : 'Launch CADia'} <PlayCircle size={17} />
           </button>
-          <div className="auth-note"><Check size={14} /> Guest sessions are isolated from other users and from the production CADia server.</div>
+          <div className="auth-note"><Check size={14} /> Guest sessions are isolated. Your guest workspace and its data are permanently deleted when you sign out.</div>
 
           <div className="auth-divider"><span>Returning user</span></div>
           <p className="eyebrow">{mode === 'login' ? 'SIGN IN' : 'CREATE WORKSPACE'}</p>

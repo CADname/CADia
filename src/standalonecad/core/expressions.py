@@ -42,7 +42,7 @@ def _legacy_eval(value, parameters: Mapping[str, float]) -> float:
     if not isinstance(value, str):
         raise ValueError(f"Expected number/expression, got {type(value).__name__}")
     text = value.strip().replace("^", "**")
-    # Preserve the established behavior first: keep every already-successful expression.
+    # Normalize supported unit suffixes before evaluating the expression.
     for suffix in (" mm", "mm", " deg", "deg"):
         if text.lower().endswith(suffix):
             text = text[:-len(suffix)].strip()
@@ -73,11 +73,10 @@ def _extended_unit_eval(value: str, parameters: Mapping[str, float]) -> float:
 
 
 def eval_expr(value, parameters: Mapping[str, float]) -> float:
-    """Evaluate an expression with a strict legacy-first monotonic policy.
+    """Evaluate expressions with deterministic core semantics and explicit-unit fallback.
 
-    The established expression semantics are attempted unchanged.  Only expressions that the legacy
-    evaluator rejects are offered to the extended explicit-unit parser, so no prior
-    successful expression changes meaning while cm/m/in/ft/rad literals become usable.
+    Core expression semantics run first. Expressions they reject may use the explicit-unit
+    parser so cm/m/in/ft/rad literals remain available without changing accepted semantics.
     """
     try:
         return _legacy_eval(value,parameters)
