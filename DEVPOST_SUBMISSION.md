@@ -20,7 +20,7 @@ https://github.com/CADname/CADia
 
 ## Demo video
 
-Add the final public or unlisted demo-video URL before submission.
+https://youtu.be/L2ocXoW0v_4
 
 ## Inspiration / problem statement
 

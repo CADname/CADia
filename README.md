@@ -3,6 +3,7 @@
 > Create, import, select, and continuously modify real B-Rep CAD with natural language.
 
 **Live demo:** https://app.cadia.co.kr  
+**Demo Video:** https://youtu.be/L2ocXoW0v_4  
 **Hackathon:** InfinityX Global Hackathon 2K26  
 **Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)  
 **Modeling evidence:** [`evidence/`](./evidence/README.md)  
