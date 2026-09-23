@@ -44,11 +44,15 @@ CADia is an AI-native CAD system for creating and editing real B-Rep models. Nat
 
 The AI interprets intent and chooses typed CAD operations; the OCCT/CadQuery modeling kernel performs the geometry work and owns the model state. When a requested edit maps unambiguously to feature history, CADia can update the driving feature or parameter and rebuild downstream geometry. When a history-based path is not appropriate, applicable direct B-Rep editing operations provide another route. Verification, rollback and recovery protect the active model across repeated changes.
 
+Because CADia runs as a web application, the workflow is not tied to one installed desktop CAD workstation. A judge or user can open the workspace from a browser, inspect or create a model, export STL/3MF/STEP artifacts, and continue from the same project state. This web-first direction also makes future phone/tablet access and native app packaging possible.
+
 ## Who it helps / real-world value
 
 CADia targets the gap between “I can describe what I want” and “I can keep engineering the result.” Students and first-time CAD users can work through language and direct selection without memorizing every command sequence, while makers, designers and experienced CAD users can use the same workflow for repetitive creation and modification. Because the result remains B-Rep CAD and can be exported through STEP, the workflow can continue beyond the AI interaction instead of ending at a visual mesh.
 
 The practical value is not only faster first geometry. CADia reduces friction in design iteration: changing dimensions, selecting a target face or edge, regenerating dependent geometry, exporting manufacturing artifacts and continuing from the same model state.
+
+CADia also points toward a broader web-to-manufacturing workflow. A non-specialist could describe a part, receive an editable CAD model, export an STL/3MF file immediately, and eventually send that file to connected local 3D-printing or prototyping partners. In that future path, CADia would not only help users model a part from anywhere, but also help them receive a physical output without needing to operate a full CAD/CAM toolchain themselves.
 
 ## Why it is different
 
@@ -108,6 +112,8 @@ This is the difference between generating a 3D object once and maintaining an ed
 - Verification, atomic rollback and automatic recovery
 - STEP, STL and 3MF export paths
 - 3D-print DFM checks and PrusaSlicer-based slicing/G-code workflows
+- Browser-based access with a deployed guest workspace
+- Future path to local 3D-printing and prototyping partner connections
 - 118 project-scoped CAD tools exposed to the AI integration layer
 - ChatGPT/Codex, GitHub Copilot, OpenAI API, Claude and Gemini integration paths sharing one CAD core
 - Isolated guest workspace for hackathon evaluation
@@ -140,6 +146,8 @@ Natural-language request + current CAD state + selection
 
 CADia separates the AI-provider layer from the CAD core: ChatGPT/Codex, GitHub Copilot and API-based providers all feed the same project-scoped CAD execution surface rather than requiring separate modeling engines. Projects and provider credentials are isolated per user, and the web deployment is containerized with FastAPI, PostgreSQL, Nginx and Docker Compose. This makes additional AI providers, CAD tools and downstream workflows extensible without replacing the geometry kernel.
 
+The web-first architecture also supports broader access. Instead of requiring a local desktop CAD setup, CADia can make CAD creation and editing available from a browser, with a future direction toward phone/tablet access, native mobile apps, and web-to-print workflows that connect generated STL/3MF files to regional 3D-printing or prototyping providers.
+
 ## Challenges
 
 The hardest problem was not producing a shape once. It was preserving design meaning across edits. CAD topology can change after a Boolean, fillet or feature rebuild, so a face that existed before an operation cannot safely be identified only by its old index. CADia therefore tracks persistent descriptors and uses topology class, geometric properties and history context to rebind references, while rejecting ambiguous matches.
@@ -157,6 +165,7 @@ Finally, the web version had to preserve an interactive CAD workflow while isola
 - Extended the workflow from single parts into assemblies, joints and manufacturing-oriented export.
 - Added transaction, verification and recovery behavior that preserves the last valid model state across repeated edits.
 - Delivered a judge-accessible web application with isolated guest workspaces.
+- Made the workflow browser-based, so CAD creation, editing and export can move beyond a single installed desktop CAD environment.
 
 ## What we learned
 
@@ -166,7 +175,7 @@ We also learned that editability is a harder and more valuable problem than one-
 
 ## What's next
 
-Next steps include broader validation across diverse CAD creation and editing tasks, improved recovery coverage, richer collaborative workflows, and deeper downstream verification.
+Next steps include broader validation across diverse CAD creation and editing tasks, improved recovery coverage, richer collaborative workflows, deeper downstream verification, better phone/tablet workflows, native app packaging, and a web-to-print path that can connect generated STL/3MF files with regional 3D-printing or prototyping partners so users can receive physical outputs from designs created in the browser.
 
 ## Built with
 
