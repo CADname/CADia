@@ -40,11 +40,3 @@ Each case uses the same naming convention where the corresponding artifact exist
 | [Clock assembly](./19-clock-assembly/) | Create a clock and assemble the hour hand, second hand, and minute hand so that all three can rotate properly. Also add the numbers 1 through 12 to the clock. |
 | [Tumbler assembly](./20-tumbler-assembly/) | Model a tumbler. I would also like a handle on the side. Model the tumbler lid properly as well and assemble it. |
 | [Piston-cylinder assembly](./21-piston-cylinder-assembly/) | Create a piston and cylinder assembly with a 30 mm bore, 40 mm stroke, and a 10 mm rod. |
-
-## Notes
-
-These examples document CADia modeling runs and their resulting artifacts.
-
-- All directory names and public-facing filenames are in English.
-- Exported CAD and manufacturing files are preserved from saved modeling runs; public-facing filenames and directory organization have been normalized.
-- Prompt text is duplicated inside each case directory to keep every example self-contained.
