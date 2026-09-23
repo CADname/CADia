@@ -40,16 +40,16 @@ Inspect that the second request edits the existing CAD state rather than startin
 
 ## 3. Inspect saved modeling evidence
 
-Open [`../evidence/README.md`](../evidence/README.md). It indexes 20 saved modeling examples with the exact prompt and available preview / STEP AP242 / STEP / STL / 3MF / 3D-print G-code artifacts.
+Open [`../evidence/README.md`](../evidence/README.md). It indexes 21 saved modeling examples with the exact prompt and available preview / STEP AP242 / STEP / STL / 3MF / 3D-print G-code artifacts.
 
 Suggested examples:
 
 - `01-spur-gear` — parametric mechanical component
 - `03-spur-gear-assembly` — multi-part gear assembly
 - `10-u-shaped-bracket` — compound bracket geometry
-- `23-laptop-assembly` — larger assembly
-- `24-clock-assembly` — multi-component clock with hands and numerals
-- `25-tumbler-assembly` — product-style assembly
+- `18-laptop-assembly` — larger assembly
+- `19-clock-assembly` — multi-component clock with hands and numerals
+- `20-tumbler-assembly` — product-style assembly
 
 ## 4. Technical path
 
