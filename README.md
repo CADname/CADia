@@ -62,7 +62,7 @@ These files provide concrete modeling evidence for CADia's implemented capabilit
 
 | Spur gear | U-shaped bracket | Laptop assembly | Clock assembly |
 | --- | --- | --- | --- |
-| ![Spur gear](./evidence/01-spur-gear/preview.png) | ![U-shaped bracket](./evidence/10-u-shaped-bracket/preview.png) | ![Laptop assembly](./evidence/23-laptop-assembly/preview.png) | ![Clock assembly](./evidence/24-clock-assembly/preview.png) |
+| ![Spur gear](./evidence/01-spur-gear/preview.png) | ![U-shaped bracket](./evidence/10-u-shaped-bracket/preview.png) | ![Laptop assembly](./evidence/18-laptop-assembly/preview.png) | ![Clock assembly](./evidence/19-clock-assembly/preview.png) |
 
 ## Why CADia is different
 
