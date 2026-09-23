@@ -15,6 +15,11 @@ CADia is an AI-native CAD system for creating and editing real B-Rep models. Nat
 
 The AI handles intent and tool planning; typed CAD operations execute against an OCCT/CadQuery kernel that owns the geometry and model state. The same model can be modified repeatedly through parametric rebuilds or direct B-Rep edits, verified after operations, and exported for downstream use.
 
+## The engineering problem
+
+Modern CAD is powerful, but turning design intent into editable engineering geometry still requires users to know command sequences, feature history, constraints, topology references and export workflows. A first generated shape is not enough: engineers need to keep changing the same model, preserve dimensions, select exact faces or edges, regenerate dependent geometry and hand off the result to downstream CAD or manufacturing tools.
+
+CADia focuses on that harder second half of the workflow. It is not only a text-to-3D generator. It is an editable CAD workflow where natural language, direct geometric selection, topology-aware rebinding, feature-history modification, verification and manufacturing export all operate on the same evolving B-Rep model.
 
 ## For judges
 
@@ -36,13 +41,11 @@ Change the plate thickness to 12 mm and the four holes to 8 mm diameter while pr
 
 The [`evidence/`](./evidence/README.md) directory contains 20 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
 
-
 ## Modeling evidence
 
 The [`evidence/`](./evidence/README.md) directory contains **20 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
 
 These files provide concrete modeling evidence for CADia's implemented capabilities.
-
 
 ### Example output gallery
 
@@ -97,6 +100,46 @@ The language model is not the geometry kernel. It interprets the user's design i
 ### Full-request planning with deterministic execution
 
 Free-form chat is interpreted against the complete user request, current CAD state, selection context and typed tool catalog before CAD operations are chosen. Plans are schema-validated before execution, and the resulting typed operations run through deterministic geometry generators and the CAD kernel.
+
+## Algorithms under the hood
+
+CADia's central technical problem is keeping a generated CAD model editable after the first result appears. The system combines AI planning with deterministic CAD algorithms for topology, history, parameter resolution and transaction safety.
+
+| Algorithmic layer | What CADia does |
+| --- | --- |
+| Persistent topology descriptors | Stores stable descriptors for selected faces and edges using CAD topology class, geometric type, position, normal/direction, size and surrounding context rather than relying on transient viewport triangle IDs. |
+| Topology rebinding | After a rebuild, Boolean, fillet or direct edit changes the B-Rep, CADia rematches selections against the updated shape and rejects ambiguous candidates instead of guessing. |
+| Feature-history provenance tracing | For native parametric documents, CADia walks feature-stage shapes to determine where a selected face or edge originated when that relationship can be established safely. |
+| Driving-parameter resolution | When a selected face maps to a feature, CADia compares geometric direction, feature axis and editable dimensions to decide whether the user's edit should change length, width, height, radius, diameter or extrusion distance. |
+| Parametric regeneration | A successful history edit updates the source feature or parameter expression and rebuilds downstream geometry, so the result remains part of the CAD model instead of a disconnected visual patch. |
+| Direct B-Rep fallback | Imported geometry or edits without a reliable history path can still use direct CAD operations when applicable. |
+| Atomic verification and rollback | Plan execution is wrapped in validation, workspace snapshots, post-operation verification, rollback and bounded recovery so failed edits do not destroy the last usable model state. |
+
+A typical selected-face edit resolves as:
+
+```text
+Selected B-Rep face
+        |
+        v
+Persistent topology descriptor
+        |
+        v
+Rebind against current B-Rep shape
+        |
+        v
+Trace feature-history provenance when available
+        |
+        v
+Resolve the driving parameter or direct-edit route
+        |
+        v
+Regenerate downstream geometry
+        |
+        v
+Verify result, then commit or rollback
+```
+
+This is the difference between generating a 3D object once and maintaining an editable engineering model through repeated design changes.
 
 ## Technical highlights
 
