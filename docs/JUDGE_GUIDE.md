@@ -4,8 +4,12 @@ CADia is submitted to **InfinityX Global Hackathon 2K26**. This guide is the sho
 
 ## Demo videos
 
-- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
-- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4  
+  Walkthrough: [`DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md)
+- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4  
+  Walkthrough: [`DEMO_02_TOPOLOGY_EDITING.md`](./DEMO_02_TOPOLOGY_EDITING.md)
+
+Demo Video 1 shows the broader browser-based CAD workflow: creating a bevel gear, adding a matching second gear as a separate part, assembling the gears at a 90-degree shaft angle, adding 10 mm through bores while preserving the existing gear geometry and assembly, and then creating a product-style computer mouse model.
 
 Demo Video 2 focuses on continued editing of the same B-Rep model. A mechanical mounting bracket is built incrementally and then modified through direct face and edge selection.
 
