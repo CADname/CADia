@@ -1,6 +1,6 @@
 # CADia — Modeling Evidence
 
-This directory contains CAD modeling examples paired with the exact English prompts used for each case. Each case includes its prompt and the exported artifacts produced by that run.
+This directory contains 22 CAD modeling examples paired with the exact English prompts used for each case. Each case includes its prompt and the exported artifacts produced by that run.
 
 ## Repository structure
 
@@ -40,3 +40,4 @@ Each case uses the same naming convention where the corresponding artifact exist
 | [Clock assembly](./19-clock-assembly/) | Create a clock and assemble the hour hand, second hand, and minute hand so that all three can rotate properly. Also add the numbers 1 through 12 to the clock. |
 | [Tumbler assembly](./20-tumbler-assembly/) | Model a tumbler. I would also like a handle on the side. Model the tumbler lid properly as well and assemble it. |
 | [Piston-cylinder assembly](./21-piston-cylinder-assembly/) | Create a piston and cylinder assembly with a 30 mm bore, 40 mm stroke, and a 10 mm rod. |
+| [Pillow block bearing housing](./22-pillow-block-bearing-housing/) | Create a single-solid pillow block bearing housing for a 6205 bearing. Make a rectangular base plate 120 mm long, 60 mm wide, and 12 mm thick. Add two vertical mounting holes of Ø10 mm through the base, positioned symmetrically 45 mm to the left and right of the center. Create a central cylindrical bearing housing with an outer diameter of 70 mm and a width of 32 mm. Create a concentric through bore of Ø52 mm for the bearing seat. Connect the cylindrical housing to the base using two symmetric triangular support ribs, each 8 mm thick. Add a 5 mm fillet to the outer edges where the cylindrical housing and support ribs meet the base. Add a centered lubrication hole of Ø6 mm from the top of the cylindrical housing through to the bearing bore. The final model must be one continuous solid body. |
