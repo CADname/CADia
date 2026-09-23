@@ -40,7 +40,7 @@ Inspect that the second request edits the existing CAD state rather than startin
 
 ## 3. Inspect saved modeling evidence
 
-Open [`../evidence/README.md`](../evidence/README.md). It indexes 21 saved modeling examples with the exact prompt and available preview / STEP AP242 / STEP / STL / 3MF / 3D-print G-code artifacts.
+Open [`../evidence/README.md`](../evidence/README.md). It indexes 22 saved modeling examples with the exact prompt and available preview / STEP AP242 / STEP / STL / 3MF / 3D-print G-code artifacts.
 
 Suggested examples:
 
