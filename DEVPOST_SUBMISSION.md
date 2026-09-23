@@ -32,11 +32,13 @@ Demo Video 2 focuses on direct B-Rep face and edge selection, history-aware para
 
 ## Inspiration / problem statement
 
-Modern CAD is powerful, but turning design intent into editable engineering geometry still requires users to know command sequences, feature history, constraints, topology references and export workflows. A first generated shape is not enough: engineers need to keep changing the same model, preserve dimensions, select exact faces or edges, regenerate dependent geometry and hand off the result to downstream CAD or manufacturing tools.
+Most people can describe the part they want, but they cannot easily turn that idea into an editable CAD model or a manufacturable file. Traditional CAD workflows are tied to heavy desktop software: users often need to install large CAD programs, set up the right workstation environment, learn complex command sequences, understand feature history and topology, and then manage export steps before they can get a usable STL, STEP, or 3MF file.
 
-Many AI 3D workflows stop at first-pass generation. CADia targets the harder second half of the engineering workflow: keeping the model editable after it has been created.
+That creates a major access barrier. A student, maker, founder, or non-specialist may have a clear design idea, but still be blocked by installation requirements, device limitations, CAD learning time, and the need to sit at a specific desktop machine. Even after the first model is created, real design work does not stop there: users need to revise dimensions, select exact faces or edges, regenerate dependent geometry, verify the result, export manufacturing files, and continue from the same model state wherever they are.
 
-CADia asks a different question: what if anyone could describe a design, open an existing model, point directly at the geometry they mean, and keep modifying the same real CAD model through natural language?
+Many AI 3D workflows also stop at first-pass generation. A first generated shape is not enough if the result cannot be continuously edited like real CAD. CADia targets the harder second half of the workflow: keeping the model editable after it has been created, while making the workspace available through the browser instead of a locally installed CAD environment.
+
+CADia asks a different question: what if anyone could open a browser, describe a design, open or create a real CAD model, point directly at the geometry they mean, keep modifying it from anywhere, and immediately export files that can later connect to 3D-printing or prototyping workflows?
 
 ## What it does
 
@@ -44,13 +46,15 @@ CADia is an AI-native CAD system for creating and editing real B-Rep models. Nat
 
 The AI interprets intent and chooses typed CAD operations; the OCCT/CadQuery modeling kernel performs the geometry work and owns the model state. When a requested edit maps unambiguously to feature history, CADia can update the driving feature or parameter and rebuild downstream geometry. When a history-based path is not appropriate, applicable direct B-Rep editing operations provide another route. Verification, rollback and recovery protect the active model across repeated changes.
 
-Because CADia runs as a web application, the workflow is not tied to one installed desktop CAD workstation. A judge or user can open the workspace from a browser, inspect or create a model, export STL/3MF/STEP artifacts, and continue from the same project state. This web-first direction also makes future phone/tablet access and native app packaging possible.
+Because CADia runs as a web application, the workflow is not tied to one installed desktop CAD workstation. A judge or user can open the workspace from a browser, inspect or create a model, modify it later from another device, export STL/3MF/STEP artifacts, and continue from the same project state. This web-first direction also makes future phone/tablet access and native app packaging possible.
 
 ## Who it helps / real-world value
 
 CADia targets the gap between “I can describe what I want” and “I can keep engineering the result.” Students and first-time CAD users can work through language and direct selection without memorizing every command sequence, while makers, designers and experienced CAD users can use the same workflow for repetitive creation and modification. Because the result remains B-Rep CAD and can be exported through STEP, the workflow can continue beyond the AI interaction instead of ending at a visual mesh.
 
 The practical value is not only faster first geometry. CADia reduces friction in design iteration: changing dimensions, selecting a target face or edge, regenerating dependent geometry, exporting manufacturing artifacts and continuing from the same model state.
+
+The web format is also part of the value. Users do not need to install a large CAD package just to start modeling or make a quick design change. A browser-based CAD workspace can be opened from different locations and devices, allowing a user to create, review, adjust, and export a model whenever the design needs to change.
 
 CADia also points toward a broader web-to-manufacturing workflow. A non-specialist could describe a part, receive an editable CAD model, export an STL/3MF file immediately, and eventually send that file to connected local 3D-printing or prototyping partners. In that future path, CADia would not only help users model a part from anywhere, but also help them receive a physical output without needing to operate a full CAD/CAM toolchain themselves.
 
