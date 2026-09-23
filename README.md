@@ -4,13 +4,21 @@
 > Create, select, revise, and export real B-Rep CAD models from anywhere with natural language.
 
 **Live demo:** https://app.cadia.co.kr
-**Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
-**Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+
+**Demo videos**
+- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+
 **Hackathon:** InfinityX Global Hackathon 2K26
-**Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
-**Modeling evidence:** [`evidence/`](./evidence/README.md)
-**Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
-**Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
+
+**Evaluation docs**
+- **Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
+- **Demo 1 workflow:** [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md)
+- **Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
+
+**Supporting materials**
+- **Modeling evidence:** [`evidence/`](./evidence/README.md)
+- **Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 
 CADia turns the browser into an AI-native CAD workspace. Users do not need to install a large desktop CAD package just to create, inspect, modify, or export a model. A student, maker, founder, judge, or non-specialist can open the web workspace, describe a part, select exact faces or edges, keep revising the same real B-Rep CAD model, and export downstream files such as STEP, STL, 3MF, and G-code-oriented outputs.
 
@@ -354,7 +362,7 @@ web/frontend/            React/Three.js judging and CAD interface
 tools/                   Web/MCP bridges
 scripts/                 Local utilities
 deploy/                  Deployment and Nginx helpers
-docs/                    Judge guide, architecture and topology-editing demo
+docs/                    Judge guide, architecture and demo walkthroughs
 SUBMISSION_SCOPE.md      InfinityX submission scope and submitted capability summary
 ```
 
@@ -379,6 +387,7 @@ Never commit a real `.env` file or provider credentials.
 ## Hackathon submission materials
 
 - [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
+- [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md) — creation, assembly and manufacturing-handoff demo
 - [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
 - [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
 - [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
