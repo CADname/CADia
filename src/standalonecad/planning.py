@@ -753,6 +753,56 @@ class PlanExecutor:
             self._rollback(snap)
             return PlanResult(False, '', calls, results, str(exc), before, int(self.engine.revision))
 
+
+    def execute_stepwise(self, plan: dict[str, Any], on_event=None, progress_span: tuple[int,int] = (25,90)) -> PlanResult:
+        """Execute a plan with per-call savepoints while preserving successful prefix work.
+
+        Unlike :meth:`execute`, this method does not roll the whole plan back when a later
+        call fails. Only the failing call is rolled back, so a controller can inspect the
+        real intermediate CAD state and ask the planner for a continuation. The caller is
+        responsible for taking an outer snapshot if it needs all-or-nothing fallback.
+        """
+        calls = self.validate_plan(plan)
+        before = int(self.engine.revision)
+        results: list[dict[str, Any]] = []
+        bindings: dict[str, dict[str, Any]] = {}
+        expects_revision = any(self._short(c['tool']) not in NON_REVISION_COMMANDS for c in calls)
+        start, end = progress_span
+        span = max(1, end - start)
+
+        for idx, call in enumerate(calls, 1):
+            step_snapshot = self._snapshot()
+            try:
+                pct = start + int(span * (idx - 1) / max(1, len(calls)))
+                self._emit_progress(on_event, f'Modeling… {idx}/{len(calls)}', pct)
+                runtime_args = self._resolve_runtime_refs(call['arguments'], results, bindings)
+                result = self._dispatch(call['tool'], runtime_args)
+                row = {'tool': call['tool'], 'result': result}
+                bind = call.get('bind')
+                if bind:
+                    row['bind'] = bind
+                    bindings[str(bind)] = result if isinstance(result, dict) else {}
+                results.append(row)
+                pct_done = start + int(span * idx / max(1, len(calls)))
+                self._emit_progress(on_event, f'Modeling step complete · {idx}/{len(calls)}', pct_done)
+            except Exception as exc:
+                try:
+                    self._rollback(step_snapshot)
+                except Exception:
+                    pass
+                return PlanResult(
+                    False, '', calls, results, str(exc), before, int(self.engine.revision)
+                )
+
+        self._emit_progress(on_event, 'Validating model result…', min(98, end + 2))
+        after = int(self.engine.revision)
+        if expects_revision and after == before:
+            return PlanResult(
+                False, '', calls, results,
+                'CAD command finished without changing the current document', before, after,
+            )
+        return PlanResult(True, self._summary(results, before, after), calls, results, None, before, after)
+
     def _summary(self, results: list[dict[str, Any]], before: int, after: int) -> str:
         with self.engine.lock:
             doc = self.engine.doc

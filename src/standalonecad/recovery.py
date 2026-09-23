@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import re
 from typing import Any, Callable
 
@@ -335,6 +336,112 @@ def _progress(on_event, message: str, percent: int) -> None:
         on_event("progress", {"message": message, "percent": percent})
 
 
+
+def _closed_loop_enabled() -> bool:
+    value = os.environ.get("CADIA_KERNEL_CLOSED_LOOP", "1").strip().lower()
+    return value not in {"0", "false", "no", "off", "disabled"}
+
+
+def _combine_success(prefix_calls: list[dict[str, Any]], prefix_results: list[dict[str, Any]], final: PlanResult, revision_before: int) -> PlanResult:
+    return PlanResult(
+        True,
+        final.message,
+        copy.deepcopy(prefix_calls) + copy.deepcopy(final.calls),
+        copy.deepcopy(prefix_results) + copy.deepcopy(final.results),
+        None,
+        revision_before,
+        final.revision_after,
+    )
+
+
+def _try_kernel_closed_loop(
+    *,
+    executor,
+    agent,
+    user_prompt: str,
+    state_provider: Callable[[], dict[str, Any]],
+    plan: dict[str, Any],
+    on_event=None,
+    max_continuations: int = 2,
+) -> PlanResult | None:
+    """Failure-localized kernel-feedback execution with legacy fallback.
+
+    The original plan is executed call-by-call using PlanExecutor.execute_stepwise.
+    Successful prefix calls remain in the real CAD document. When one call fails, only
+    that call is rolled back and the planner sees the actual intermediate state before
+    producing a continuation. If the closed-loop path cannot finish, the outer snapshot
+    is restored and the caller falls back to the unchanged legacy execution/recovery path.
+    """
+    if not _closed_loop_enabled():
+        return None
+    if not callable(getattr(executor, "execute_stepwise", None)):
+        return None
+    if not callable(getattr(agent, "continue_after_failure", None)):
+        return None
+    if not callable(getattr(executor, "_snapshot", None)) or not callable(getattr(executor, "_rollback", None)):
+        return None
+
+    try:
+        outer = executor._snapshot()
+    except Exception:
+        return None
+
+    current_plan = copy.deepcopy(plan)
+    completed_calls: list[dict[str, Any]] = []
+    completed_results: list[dict[str, Any]] = []
+    revision_before = int(getattr(executor.engine, "revision", 0))
+
+    try:
+        for attempt in range(0, max(0, int(max_continuations)) + 1):
+            span_start = 25 if attempt == 0 else min(88, 72 + (attempt - 1) * 8)
+            span_end = 70 if attempt == 0 else min(94, span_start + 6)
+            result = executor.execute_stepwise(
+                current_plan, on_event=on_event, progress_span=(span_start, span_end)
+            )
+
+            if result.ok:
+                return _combine_success(completed_calls, completed_results, result, revision_before)
+
+            prefix_count = len(result.results or [])
+            succeeded_now = copy.deepcopy((result.calls or [])[:prefix_count])
+            completed_calls.extend(succeeded_now)
+            completed_results.extend(copy.deepcopy(result.results or []))
+
+            failed_call = copy.deepcopy((result.calls or [])[prefix_count]) if prefix_count < len(result.calls or []) else {}
+            remaining = copy.deepcopy((result.calls or [])[prefix_count + 1:]) if prefix_count < len(result.calls or []) else []
+
+            if attempt >= max(0, int(max_continuations)):
+                break
+
+            _progress(
+                on_event,
+                f"Kernel feedback received · replanning remaining work {attempt + 1}/{max_continuations}",
+                min(95, span_end + 1),
+            )
+            continuation = agent.continue_after_failure(
+                user_prompt=user_prompt,
+                current_state=state_provider(),
+                completed_prefix=copy.deepcopy(completed_calls),
+                failed_call=failed_call,
+                remaining_calls=remaining,
+                error=result.error or "unknown CAD error",
+                on_event=on_event,
+                progress_span=(min(95, span_end + 1), min(97, span_end + 4)),
+            )
+            if not isinstance(continuation, dict) or not continuation.get("calls"):
+                break
+            current_plan = continuation
+
+    except Exception:
+        pass
+
+    try:
+        executor._rollback(outer)
+    except Exception:
+        return None
+    return None
+
+
 def execute_with_failure_recovery(
     *,
     executor,
@@ -346,7 +453,15 @@ def execute_with_failure_recovery(
     initial_progress_span: tuple[int, int] = (25, 70),
     max_ai_repairs: int = 2,
 ) -> PlanResult:
-    """Execute the requested plan first; enter recovery only after an explicit failure."""
+    """Execute with kernel-feedback continuation, then fall back to legacy recovery."""
+    closed_loop = _try_kernel_closed_loop(
+        executor=executor, agent=agent, user_prompt=user_prompt, state_provider=state_provider,
+        plan=plan, on_event=on_event, max_continuations=max_ai_repairs,
+    )
+    if closed_loop is not None:
+        return closed_loop
+
+    # Legacy path is preserved exactly as the final fallback.
     initial = _safe_execute(executor, plan, on_event=on_event, progress_span=initial_progress_span)
     if initial.ok:
         return initial

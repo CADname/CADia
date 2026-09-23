@@ -79,6 +79,42 @@ RECOVERY_CONTEXT:
 """
 
 
+
+CONTINUE_PREFIX = """You are continuing a CAD build after one tool call failed, while every earlier successful call is still present in CURRENT_STATE.
+Return JSON only with the usual CAD plan schema: {{"calls":[{{"tool":"...","arguments":{{...}},"bind":"optional"}}],"note":"..."}}.
+Use only TOOL_CATALOG.
+
+Do NOT rebuild or repeat the already completed prefix. Continue from CURRENT_STATE.
+Repair the failed operation using the concrete kernel error and the actual current CAD state, then complete every still-unfinished part of ORIGINAL_REQUEST.
+Treat COMPLETED_PREFIX as facts already executed successfully. Treat FAILED_CALL as not executed. REMAINING_ORIGINAL_CALLS are hints only; rewrite or omit them when the current state/error proves a better path.
+Never weaken or silently drop explicit dimensions, counts, relationships, edits, or preservation constraints from ORIGINAL_REQUEST merely to make the kernel succeed.
+Never reset/delete/replace pre-existing user geometry unless ORIGINAL_REQUEST explicitly requires it.
+Do not use $bind or $result references that belonged to COMPLETED_PREFIX; use exact occurrence/document/interface names visible in CURRENT_STATE. New bindings created inside this continuation plan are allowed.
+For ambiguous face/edge targets, use exact CURRENT_STATE selection/topology information rather than guessing.
+
+TOOL_CATALOG:
+{tool_catalog}
+
+ORIGINAL_REQUEST:
+{user_request}
+
+CURRENT_STATE:
+{current_state}
+
+COMPLETED_PREFIX:
+{completed_prefix}
+
+FAILED_CALL:
+{failed_call}
+
+KERNEL_ERROR:
+{error}
+
+REMAINING_ORIGINAL_CALLS:
+{remaining_calls}
+"""
+
+
 def _versionish(path: Path) -> tuple[int, ...]:
     parts: list[int] = []
     for x in path.parent.name.replace("v", "").split("."):
@@ -441,6 +477,31 @@ class CodexAgent:
         handles them with atomic rollback, deterministic recovery, and bounded AI repairs.
         """
         return _plan_llm_first_with_retry(self, user_prompt, current_state, on_event=on_event)
+
+
+    def continue_after_failure(
+        self,
+        user_prompt: str,
+        current_state: dict[str, Any],
+        completed_prefix: list[dict[str, Any]],
+        failed_call: dict[str, Any],
+        remaining_calls: list[dict[str, Any]],
+        error: str,
+        on_event=None,
+        progress_span: tuple[int, int] = (72, 80),
+    ) -> dict[str, Any]:
+        """Plan only the remaining work from the real post-prefix CAD state."""
+        prompt = CONTINUE_PREFIX.format(
+            tool_catalog=json.dumps(self._catalog, ensure_ascii=False, separators=(",", ":")),
+            user_request=user_prompt.strip(),
+            current_state=json.dumps(current_state, ensure_ascii=False, separators=(",", ":")),
+            completed_prefix=json.dumps(completed_prefix or [], ensure_ascii=False, separators=(",", ":")),
+            failed_call=json.dumps(failed_call or {}, ensure_ascii=False, separators=(",", ":")),
+            error=str(error),
+            remaining_calls=json.dumps(remaining_calls or [], ensure_ascii=False, separators=(",", ":")),
+        )
+        planned = self._run_planner(prompt, on_event=on_event, progress_span=progress_span)
+        return _validate_planner_plan(planned, self._catalog)
 
     def repair(self, user_prompt: str, current_state: dict[str, Any], failed_plan: dict[str, Any], error: str, on_event=None, recovery_context: dict[str, Any] | None = None, progress_span: tuple[int, int] = (72, 78)) -> dict[str, Any]:
         prompt = REPAIR_PREFIX.format(

@@ -19,7 +19,8 @@ CADia is an AI-native CAD system for creating, editing, and continuously modifyi
 - Typed project-scoped CAD tool execution
 - Plan/schema validation before CAD execution
 - Deterministic CAD geometry execution through OCCT/CadQuery
-- Verification, transaction rollback and bounded recovery
+- Per-call savepoints and failure-localized kernel-feedback continuation
+- Request-level rollback with bounded legacy recovery fallback
 
 ## Editable CAD capabilities
 

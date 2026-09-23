@@ -86,7 +86,7 @@ Many generative 3D workflows focus on visual or mesh output. CADia is built arou
 | History-aware editing | When a selected change maps unambiguously to model history, update the driving feature/parameter and rebuild downstream geometry |
 | Direct B-Rep editing | Use direct geometry editing paths when history-based modification is unavailable or inappropriate |
 | Topology | Persistent face/edge descriptors with rebinding after topology changes; ambiguous matches are rejected |
-| Reliability | Verification, atomic rollback and bounded automatic recovery |
+| Reliability | Per-call savepoints, kernel-feedback continuation, verification, outer rollback and bounded legacy recovery |
 | Broader CAD workflows | Parametric features, sketches, assemblies, constraints, joints and standard-component generators |
 | Downstream handoff | STEP, STL, 3MF, 3D-print DFM and slicing/G-code workflows |
 | Web accessibility | Browser-based access so CAD creation, editing and export are not tied to a single installed desktop CAD workstation |
@@ -106,7 +106,7 @@ Typed CAD operations (project-scoped MCP surface)
 OCCT / CadQuery B-Rep kernel
         |
         v
-Verification + atomic rollback + recovery
+Per-call savepoints + kernel feedback + bounded recovery
         |
         v
 Editable parametric model + feature history
@@ -157,7 +157,7 @@ flowchart TD
 | Driving-parameter resolution | When a selected face maps to a feature, CADia compares geometric direction, feature axis and editable dimensions to decide whether the user's edit should change length, width, height, radius, diameter or extrusion distance. |
 | Parametric regeneration | A successful history edit updates the source feature or parameter expression and rebuilds downstream geometry, so the result remains part of the CAD model instead of a disconnected visual patch. |
 | Direct B-Rep fallback | Imported geometry or edits without a reliable history path can still use direct CAD operations when applicable. |
-| Atomic verification and rollback | Plan execution is wrapped in validation, workspace snapshots, post-operation verification, rollback and bounded recovery so failed edits do not destroy the last usable model state. |
+| Kernel-feedback recovery | Plan execution uses per-call savepoints. When a later call fails, the failing call is rolled back while the successful prefix is preserved, and the planner can continue from the actual intermediate CAD state and kernel error. If continuation cannot complete, CADia restores the outer snapshot and falls back to the legacy atomic recovery path. |
 
 A typical selected-face edit resolves as:
 
@@ -261,7 +261,7 @@ This hybrid path is what lets CADia focus on **continued editing of real CAD**, 
 
 ### Verification and recovery
 
-Modeling operations use transaction boundaries, verification, rollback and bounded recovery to preserve the last valid model state across repeated edits.
+Modeling operations use per-call savepoints and bounded kernel-feedback continuation. If a tool call fails after earlier calls have succeeded, CADia can preserve that successful prefix, inspect the real intermediate CAD state and kernel error, and replan only the unfinished work. If the continuation path cannot finish safely, the request-level snapshot is restored and the existing atomic recovery path remains available as a fallback.
 
 ### Assemblies and joints
 
