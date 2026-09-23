@@ -15,7 +15,7 @@ def _under(path: Path, root: Path) -> bool:
 
 
 def validate_export_path(value: str) -> Path:
-    """Behavioral port of bimwright/ipt-mcp v0.1.0 ExportPathPolicy."""
+    """Validate that export output paths stay within allowed local roots."""
     if value is None or not str(value).strip():
         raise ValueError("output path is required")
     raw = Path(os.path.expandvars(os.path.expanduser(str(value))))
@@ -34,7 +34,7 @@ def validate_export_path(value: str) -> Path:
 
 
 def validate_rectangular_pattern(p: dict) -> None:
-    """Port the API-free rectangular pattern rules from upstream."""
+    """Validate rectangular pattern arguments before geometry execution."""
     count1 = int(p.get("count1", 0))
     spacing1 = float(p.get("spacing_mm1", 0))
     if count1 < 2:
@@ -66,7 +66,7 @@ def _validate_near(value) -> None:
 
 
 def validate_face_selector(selector: dict, allow_cylindrical: bool = True) -> None:
-    """Port the API-free face-selector validation before geometry selection."""
+    """Validate face-selector arguments before geometry selection."""
     if not isinstance(selector, dict):
         raise ValueError("face selector must be an object")
     kind = str(selector.get("kind") or "").lower()
