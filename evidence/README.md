@@ -44,5 +44,5 @@ Each case uses the same naming convention where the corresponding artifact exist
 These examples document CADia modeling runs and their resulting artifacts.
 
 - All directory names and public-facing filenames are in English.
-- Exported CAD and manufacturing files are preserved from the original runs; public-facing filenames and directory organization have been normalized.
+- Exported CAD and manufacturing files are preserved from saved modeling runs; public-facing filenames and directory organization have been normalized.
 - Prompt text is duplicated inside each case directory to keep every example self-contained.
