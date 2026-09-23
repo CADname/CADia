@@ -29,9 +29,12 @@ https://youtu.be/L2ocXoW0v_4
 https://youtu.be/bsyfQU5MiZ4
 
 Demo Video 2 focuses on direct B-Rep face and edge selection, history-aware parametric modification, selected-edge fillet and chamfer operations, regeneration, and verification on the same evolving CAD model.
+
 ## Inspiration / problem statement
 
-Modern CAD is powerful, but using it still requires learning many commands, feature operations, constraints, topology references and repetitive editing steps. Generative AI can make 3D content easier to create, but a visually plausible mesh is not the same thing as a reusable CAD model: it may not retain editable dimensions, feature history, persistent topology or a reliable downstream workflow.
+Modern CAD is powerful, but turning design intent into editable engineering geometry still requires users to know command sequences, feature history, constraints, topology references and export workflows. A first generated shape is not enough: engineers need to keep changing the same model, preserve dimensions, select exact faces or edges, regenerate dependent geometry and hand off the result to downstream CAD or manufacturing tools.
+
+Many AI 3D workflows stop at first-pass generation. CADia targets the harder second half of the engineering workflow: keeping the model editable after it has been created.
 
 CADia asks a different question: what if anyone could describe a design, open an existing model, point directly at the geometry they mean, and keep modifying the same real CAD model through natural language?
 
@@ -44,6 +47,8 @@ The AI interprets intent and chooses typed CAD operations; the OCCT/CadQuery mod
 ## Who it helps / real-world value
 
 CADia targets the gap between “I can describe what I want” and “I can keep engineering the result.” Students and first-time CAD users can work through language and direct selection without memorizing every command sequence, while makers, designers and experienced CAD users can use the same workflow for repetitive creation and modification. Because the result remains B-Rep CAD and can be exported through STEP, the workflow can continue beyond the AI interaction instead of ending at a visual mesh.
+
+The practical value is not only faster first geometry. CADia reduces friction in design iteration: changing dimensions, selecting a target face or edge, regenerating dependent geometry, exporting manufacturing artifacts and continuing from the same model state.
 
 ## Why it is different
 
@@ -60,6 +65,34 @@ The main technical separation is deliberate:
 CADia also implements persistent topology descriptors and history-aware editing. A face or edge selected in the browser is connected back to CAD topology rather than treated as an anonymous triangle selection. After model changes, CADia uses topology class, geometric properties and model/history context to rebind references and rejects ambiguous matches. When an edit can be traced unambiguously to a driving feature or parameter, the system changes that source and rebuilds downstream geometry. Imported geometry and operations without a usable history path can use direct B-Rep editing.
 
 The editing flow is therefore: **natural language and/or selection -> topology resolution -> history-aware parameter/feature edit when unambiguous -> downstream rebuild -> topology rebinding -> verification**, with a direct B-Rep edit path for geometry without a usable parametric-history path. This makes editing, not just first-pass generation, a core part of the system.
+
+## Algorithms under the hood
+
+CADia's core technical challenge is not asking an AI model to write geometry once. The hard part is preserving editable CAD meaning after the model changes. CADia combines AI planning with deterministic CAD algorithms for topology, history, parameter resolution and transaction safety.
+
+| Algorithmic layer | What CADia does |
+| --- | --- |
+| Persistent topology descriptors | Stores stable descriptors for selected faces and edges using CAD topology class, geometric type, position, normal/direction, size and surrounding context instead of transient viewport triangle IDs. |
+| Topology rebinding | After a rebuild, Boolean, fillet or direct edit changes the B-Rep, CADia rematches selections against the updated shape and rejects ambiguous candidates instead of guessing. |
+| Feature-history provenance tracing | For native parametric documents, CADia walks feature-stage shapes to determine where a selected face or edge originated when that relationship can be established safely. |
+| Driving-parameter resolution | When a selected face maps to a feature, CADia compares geometric direction, feature axis and editable dimensions to decide whether the user's edit should change length, width, height, radius, diameter or extrusion distance. |
+| Parametric regeneration | A successful history edit updates the source feature or parameter expression and rebuilds downstream geometry, so the result remains part of the CAD model instead of a disconnected visual patch. |
+| Direct B-Rep fallback | Imported geometry or edits without a reliable history path can still use direct CAD operations when applicable. |
+| Atomic verification and rollback | Plan execution is wrapped in validation, workspace snapshots, post-operation verification, rollback and bounded recovery so failed edits do not destroy the last usable model state. |
+
+A selected-face edit resolves as:
+
+```text
+Selected B-Rep face
+        -> persistent topology descriptor
+        -> rebind against the current B-Rep shape
+        -> trace feature-history provenance when available
+        -> resolve the driving parameter or direct-edit route
+        -> regenerate downstream geometry
+        -> verify result, then commit or rollback
+```
+
+This is the difference between generating a 3D object once and maintaining an editable engineering model through repeated design changes.
 
 ## Key features
 
@@ -87,7 +120,7 @@ The web backend uses FastAPI, SQLAlchemy and PostgreSQL. Each project gets a CAD
 
 The frontend is React, TypeScript and Three.js. Browser geometry is generated from the CAD runtime for visualization and interaction while persistent topology identifiers remain connected to the B-Rep source of truth.
 
-For deployment, CADia uses Docker Compose, Nginx and AWS Lightsail. The judging build adds an isolated one-click guest workflow so judges can enter the CAD workspace without registering a CADia account.
+For deployment, CADia uses Docker Compose, Nginx and AWS Lightsail. The judging build adds an isolated one-click guest workflow so judges can enter the CAD workspace without registering a CADia account. Guest sessions clearly warn that guest workspaces are temporary and delete guest data on sign-out.
 
 ## Technical architecture
 
@@ -97,6 +130,7 @@ Natural-language request + current CAD state + selection
   -> plan/schema validation
   -> deterministic CAD operations
   -> OCCT / CadQuery B-Rep kernel
+  -> topology rebinding + history-aware edit when available
   -> verification + rollback + recovery
   -> editable feature history + persistent topology
   -> browser interaction / assembly / manufacturing export
@@ -112,7 +146,7 @@ The hardest problem was not producing a shape once. It was preserving design mea
 
 Another challenge was separating probabilistic language understanding from deterministic geometry execution. CADia keeps the language model on the intent/planning side and pushes actual modeling into typed operations and the CAD kernel. Plans are validated before execution, and verification/recovery validates the resulting CAD operations and model state.
 
-Finally, the web version had to preserve an interactive CAD workflow while isolating users, projects and AI-provider credentials on a deployable server.
+Finally, the web version had to preserve an interactive CAD workflow while isolating users, projects, guest sessions and AI-provider credentials on a deployable server.
 
 ## Accomplishments we are proud of
 
