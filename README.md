@@ -1,6 +1,7 @@
-# CADia — AI-Native Editable CAD
+# CADia — Browser-Based AI-Native Editable CAD
 
-> Create, import, select, and continuously modify real B-Rep CAD with natural language.
+> Turn any browser into an editable AI CAD workspace — no heavy desktop CAD installation required.  
+> Create, select, revise, and export real B-Rep CAD models from anywhere with natural language.
 
 **Live demo:** https://app.cadia.co.kr
 **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
@@ -11,15 +12,17 @@
 **Architecture:** [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
 **Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
 
-CADia is an AI-native CAD system for creating and editing real B-Rep models. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. A user can start from a natural-language request or existing geometry, then continue working through follow-up instructions and direct face/edge/object selection.
+CADia turns the browser into an AI-native CAD workspace. Users do not need to install a large desktop CAD package just to create, inspect, modify, or export a model. A student, maker, founder, judge, or non-specialist can open the web workspace, describe a part, select exact faces or edges, keep revising the same real B-Rep CAD model, and export downstream files such as STEP, STL, 3MF, and G-code-oriented outputs.
 
-The AI handles intent and tool planning; typed CAD operations execute against an OCCT/CadQuery kernel that owns the geometry and model state. The same model can be modified repeatedly through parametric rebuilds or direct B-Rep edits, verified after operations, and exported for downstream use.
+CADia is built around editable CAD state rather than one-shot visual generation. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. The AI handles intent and tool planning; typed CAD operations execute against an OCCT/CadQuery kernel that owns the geometry and model state.
 
 ## The engineering problem
 
-Modern CAD is powerful, but turning design intent into editable engineering geometry still requires users to know command sequences, feature history, constraints, topology references and export workflows. A first generated shape is not enough: engineers need to keep changing the same model, preserve dimensions, select exact faces or edges, regenerate dependent geometry and hand off the result to downstream CAD or manufacturing tools.
+Traditional CAD workflows are powerful, but they often require heavy desktop installation, workstation setup, device-specific access, CAD command knowledge, feature-history understanding, topology references, and export workflows. That makes CAD difficult for people who can describe the part they need but cannot easily install, learn, or operate a full CAD environment.
 
-CADia focuses on that harder second half of the workflow. It is not only a text-to-3D generator. It is an editable CAD workflow where natural language, direct geometric selection, topology-aware rebinding, feature-history modification, verification and manufacturing export all operate on the same evolving B-Rep model.
+A first generated shape is also not enough. Real design work requires repeated changes to the same model: preserving dimensions, selecting exact faces or edges, changing driving parameters, regenerating dependent geometry, verifying the result, and handing the model off to downstream CAD or manufacturing tools.
+
+CADia focuses on that harder second half of the workflow. It is not only a text-to-3D generator. It is a browser-based editable CAD workflow where natural language, direct geometric selection, topology-aware rebinding, feature-history modification, verification and manufacturing export all operate on the same evolving B-Rep model.
 
 ## For judges
 
@@ -55,7 +58,15 @@ These files provide concrete modeling evidence for CADia's implemented capabilit
 
 ## Why CADia is different
 
-Many generative 3D workflows focus on visual or mesh output. CADia is built around editable CAD state and downstream CAD handoff.
+Many generative 3D workflows focus on visual or mesh output. CADia is built around browser access, editable CAD state, and downstream CAD/manufacturing handoff.
+
+| Workflow | Limitation | CADia difference |
+| --- | --- | --- |
+| Traditional desktop CAD | Heavy installation, workstation dependency, device constraints, and a steep command-learning curve | Browser-based CAD workspace with natural-language control and no required local CAD installation |
+| One-shot AI 3D / mesh tools | A first shape may look good but is often difficult to keep editing as engineering CAD | Real B-Rep CAD state with follow-up editing on the same model |
+| Manual CAD edits | Users must know exact commands, feature history, topology references, and export steps | Direct face/edge/object selection plus typed CAD operations |
+| Local-only workflow | Work is tied to one installed machine and a specific workstation setup | Create, review, modify, and export from a browser across locations and devices |
+| Visual-only output | The result may not continue into CAD or manufacturing workflows | STEP, STL, 3MF, DFM, slicing, and G-code-oriented downstream handoff |
 
 | Capability | CADia approach |
 | --- | --- |
