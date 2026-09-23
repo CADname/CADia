@@ -50,11 +50,11 @@ then, on the same model:
 Change the plate thickness to 12 mm and the four holes to 8 mm diameter while preserving their offsets.
 ```
 
-The [`evidence/`](./evidence/README.md) directory contains 20 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
+The [`evidence/`](./evidence/README.md) directory contains 21 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
 
 ## Modeling evidence
 
-The [`evidence/`](./evidence/README.md) directory contains **20 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
+The [`evidence/`](./evidence/README.md) directory contains **21 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
 
 These files provide concrete modeling evidence for CADia's implemented capabilities.
 

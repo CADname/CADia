@@ -13,6 +13,7 @@ Each case uses the same naming convention where the corresponding artifact exist
 - `model.stl` — STL export
 - `model.3mf` — 3MF export
 - `toolpath.gcode` — PrusaSlicer-generated 3D-print G-code, where available
+- `toolpath.gcode.gz` — losslessly compressed G-code for unusually large toolpaths, where used
 
 ## Modeling examples
 
@@ -38,6 +39,7 @@ Each case uses the same naming convention where the corresponding artifact exist
 | [Laptop assembly](./23-laptop-assembly/) | Model a laptop and assemble it so that it can functionally open and close. |
 | [Clock assembly](./24-clock-assembly/) | Create a clock and assemble the hour hand, second hand, and minute hand so that all three can rotate properly. Also add the numbers 1 through 12 to the clock. |
 | [Tumbler assembly](./25-tumbler-assembly/) | Model a tumbler. I would also like a handle on the side. Model the tumbler lid properly as well and assemble it. |
+| [Piston-cylinder assembly](./26-piston-cylinder-assembly/) | Create a piston and cylinder assembly with a 30 mm bore, 40 mm stroke, and a 10 mm rod. |
 
 ## Notes
 

@@ -1,0 +1,1 @@
+Create a piston and cylinder assembly with a 30 mm bore, 40 mm stroke, and a 10 mm rod.
