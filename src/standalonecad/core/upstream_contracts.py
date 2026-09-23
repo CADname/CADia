@@ -23,7 +23,7 @@ def validate_export_path(value: str) -> Path:
         raise ValueError("output path must be absolute")
     path = Path(os.path.abspath(str(raw)))
     roots = [Path.home(), Path(tempfile.gettempdir())]
-    extra = os.environ.get("BIMWRIGHT_INVENTOR_EXPORT_ROOT")
+    extra = os.environ.get("CADIA_INVENTOR_EXPORT_ROOT")
     if extra:
         x = Path(os.path.expandvars(os.path.expanduser(extra)))
         if x.is_absolute():
