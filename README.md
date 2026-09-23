@@ -70,6 +70,7 @@ Many generative 3D workflows focus on visual or mesh output. CADia is built arou
 | Reliability | Verification, atomic rollback and bounded automatic recovery |
 | Broader CAD workflows | Parametric features, sketches, assemblies, constraints, joints and standard-component generators |
 | Downstream handoff | STEP, STL, 3MF, 3D-print DFM and slicing/G-code workflows |
+| Web accessibility | Browser-based access so CAD creation, editing and export are not tied to a single installed desktop CAD workstation |
 
 ## The core idea
 
@@ -190,16 +191,15 @@ mindmap
       Downstream regeneration
     Direct-edit layer
       Imported STEP / BREP geometry
-      Face and edge operations
-      Direct B-Rep fallback
+      Applicable face / edge operations
     Reliability layer
       Transaction snapshot
       Verification
-      Rollback and bounded recovery
+      Rollback / bounded recovery
     Output layer
-      Editable CAD model
-      Assembly workflow
-      STEP / STL / 3MF / G-code
+      STEP / STL / 3MF
+      DFM / G-code
+      Future web-to-print partner flow
 ```
 
 This is the difference between generating a 3D object once and maintaining an editable engineering model through repeated design changes.
@@ -259,6 +259,10 @@ CADia can connect ChatGPT/Codex, GitHub Copilot, OpenAI API, Claude or Gemini. P
 ### Manufacturing path
 
 The web application includes STEP AP242, STL and 3MF export, 3D-print DFM checks, and PrusaSlicer-based G-code generation.
+
+### Web-to-print expansion path
+
+CADia is deployed as a web application, so the long-term direction is CAD creation from anywhere rather than only on a local desktop CAD workstation. A non-specialist user can describe a part, receive an editable CAD model, export STL/3MF files, and in a future workflow connect those files to regional 3D-printing or prototyping providers to receive physical outputs. The same web-first architecture can also support improved phone/tablet workflows and native app packaging.
 
 ## Try it
 
