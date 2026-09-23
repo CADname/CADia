@@ -105,6 +105,30 @@ Free-form chat is interpreted against the complete user request, current CAD sta
 
 CADia's central technical problem is keeping a generated CAD model editable after the first result appears. The system combines AI planning with deterministic CAD algorithms for topology, history, parameter resolution and transaction safety.
 
+```mermaid
+flowchart TD
+    A[User intent\nNatural language and/or direct selection] --> B[AI planning\nTyped CAD operation plan]
+    B --> C[Schema validation\nTool arguments and project state]
+    C --> D[CAD transaction snapshot\nPreserve last usable state]
+    D --> E[OCCT / CadQuery B-Rep execution]
+    E --> F{Is there a selected\nface / edge / object?}
+    F -- No --> G[Verify generated or modified CAD state]
+    F -- Yes --> H[Persistent topology descriptor]
+    H --> I[Rebind descriptor\nagainst current B-Rep]
+    I --> J{Unambiguous\nhistory provenance?}
+    J -- Yes --> K[Resolve driving parameter\nfeature / axis / dimension]
+    K --> L[Update feature or parameter expression]
+    L --> M[Rebuild downstream geometry]
+    J -- No --> N[Use direct B-Rep edit\nwhen applicable]
+    M --> G
+    N --> G
+    G --> O{Valid model?}
+    O -- Yes --> P[Commit updated editable CAD model]
+    O -- No --> Q[Rollback / bounded recovery]
+    Q --> R[Restore last usable model state]
+    P --> S[STEP / STL / 3MF / G-code handoff]
+```
+
 | Algorithmic layer | What CADia does |
 | --- | --- |
 | Persistent topology descriptors | Stores stable descriptors for selected faces and edges using CAD topology class, geometric type, position, normal/direction, size and surrounding context rather than relying on transient viewport triangle IDs. |
@@ -137,6 +161,45 @@ Regenerate downstream geometry
         |
         v
 Verify result, then commit or rollback
+```
+
+### Algorithm map
+
+```mermaid
+mindmap
+  root((CADia editable CAD algorithm))
+    Intent layer
+      Natural language request
+      Viewport face / edge / object selection
+      Current CAD state
+    Planning layer
+      Typed CAD tool plan
+      Schema validation
+      Project-scoped execution
+    Geometry layer
+      OCCT / CadQuery B-Rep
+      Feature history
+      Parametric expressions
+    Topology layer
+      Persistent descriptors
+      Rebinding after shape changes
+      Ambiguity rejection
+    History-edit layer
+      Provenance tracing
+      Driving-parameter resolution
+      Downstream regeneration
+    Direct-edit layer
+      Imported STEP / BREP geometry
+      Face and edge operations
+      Direct B-Rep fallback
+    Reliability layer
+      Transaction snapshot
+      Verification
+      Rollback and bounded recovery
+    Output layer
+      Editable CAD model
+      Assembly workflow
+      STEP / STL / 3MF / G-code
 ```
 
 This is the difference between generating a 3D object once and maintaining an editable engineering model through repeated design changes.
