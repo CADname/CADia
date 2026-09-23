@@ -58,6 +58,12 @@ The [`evidence/`](./evidence/README.md) directory contains **22 CAD modeling exa
 
 These files provide concrete modeling evidence for CADia's implemented capabilities.
 
+## Evaluation results
+
+- Standards-based mechanical components: **70/70 successful**
+- Open-ended object generation: **41/50 exact, 6/50 partial, 3/50 failed**
+- Natural-language CAD editing: **37/40 successful, 3/40 mismatched**
+
 ### Example output gallery
 
 | Spur gear | U-shaped bracket | Laptop assembly | Clock assembly |
