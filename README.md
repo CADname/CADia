@@ -24,6 +24,8 @@ CADia turns the browser into an AI-native CAD workspace. Users do not need to in
 
 CADia is built around editable CAD state rather than one-shot visual generation. Native parametric models retain feature/history-aware state, while imported STEP/BREP geometry can be edited through direct CAD operations. The AI handles intent and tool planning; typed CAD operations execute against an OCCT/CadQuery kernel that owns the geometry and model state.
 
+CADia also includes an experimental engineering-drawing-to-CAD workflow, allowing selected engineering drawings to be used as visual input for reconstructing editable B-Rep models.
+
 ## The engineering problem
 
 Traditional CAD workflows are powerful, but they often require heavy desktop installation, workstation setup, device-specific access, CAD command knowledge, feature-history understanding, topology references, and export workflows. That makes CAD difficult for people who can describe the part they need but cannot easily install, learn, or operate a full CAD environment.
@@ -69,6 +71,37 @@ These files provide concrete modeling evidence for CADia's implemented capabilit
 | Spur gear | U-shaped bracket | Laptop assembly | Clock assembly |
 | --- | --- | --- | --- |
 | ![Spur gear](./evidence/01-spur-gear/preview.png) | ![U-shaped bracket](./evidence/10-u-shaped-bracket/preview.png) | ![Laptop assembly](./evidence/18-laptop-assembly/preview.png) | ![Clock assembly](./evidence/19-clock-assembly/preview.png) |
+
+## Engineering drawing → editable CAD (experimental)
+
+CADia can also use engineering drawings as visual design input and attempt to reconstruct them as editable B-Rep CAD models. The workflow analyzes visible dimensions, profiles, sections, holes, grooves, and other geometric information in the drawing, then routes the reconstructed model into the same CADia editing and export workflow used for natural-language modeling.
+
+### Current capabilities
+
+- Engineering drawings can be used as input for CAD reconstruction.
+- Dimensioned orthographic and section views can provide geometric context.
+- CADia attempts to reconstruct the result as editable B-Rep geometry.
+- Successful reconstructions can continue through CADia's existing editing and export workflow.
+- Clear, well-defined engineering drawings currently produce the most reliable results.
+
+### Current limitations
+
+Drawing-to-CAD is still experimental. Difficult or ambiguous drawings can produce missing features, incorrect geometry, or disconnected intermediate solids.
+
+In a small internal evaluation using selected engineering drawings, approximately **50% of the tested cases produced end-to-end reconstructions that were considered sufficiently faithful to the source drawing**. This is an internal development measurement rather than a standardized benchmark, and performance varies substantially with drawing complexity and clarity.
+
+**Try it:** Upload an engineering drawing at https://cadia.co.kr.
+
+### Drawing-to-CAD examples
+
+| Engineering drawing | CADia reconstruction |
+| --- | --- |
+| ![Pulley engineering drawing](./evidence/drawing-to-cad/01-pulley/input-drawing.jpg) | ![Pulley reconstructed by CADia](./evidence/drawing-to-cad/01-pulley/result.png) |
+| ![Piston engineering drawing](./evidence/drawing-to-cad/02-piston/input-drawing.jpg) | ![Piston reconstructed by CADia](./evidence/drawing-to-cad/02-piston/result.png) |
+| ![Flange hub engineering drawing](./evidence/drawing-to-cad/03-flange-hub/input-drawing.jpg) | ![Flange hub reconstructed by CADia](./evidence/drawing-to-cad/03-flange-hub/result.png) |
+| ![Spur gear engineering drawing](./evidence/drawing-to-cad/04-spur-gear/input-drawing.jpg) | ![Spur gear reconstructed by CADia](./evidence/drawing-to-cad/04-spur-gear/result.png) |
+
+These examples are successful cases and do not represent the full distribution of drawing difficulty. Partial and failed cases are retained during development to improve reconstruction reliability.
 
 ## Why CADia is different
 
