@@ -32,22 +32,22 @@ More difficult or ambiguous drawings can still result in:
 
 | Input drawing | CADia result |
 | --- | --- |
-| ![](./01-pulley/input-drawing.jpg) | ![](./01-pulley/result.png) |
+| <img src="./01-pulley/input-drawing.jpg" width="180" alt="Pulley input drawing"> | <img src="./01-pulley/result.png" width="180" alt="Pulley CADia result"> |
 
 ### 02 — Piston
 
 | Input drawing | CADia result |
 | --- | --- |
-| ![](./02-piston/input-drawing.jpg) | ![](./02-piston/result.png) |
+| <img src="./02-piston/input-drawing.jpg" width="180" alt="Piston input drawing"> | <img src="./02-piston/result.png" width="180" alt="Piston CADia result"> |
 
 ### 03 — Flange / hub
 
 | Input drawing | CADia result |
 | --- | --- |
-| ![](./03-flange-hub/input-drawing.jpg) | ![](./03-flange-hub/result.png) |
+| <img src="./03-flange-hub/input-drawing.jpg" width="180" alt="Flange hub input drawing"> | <img src="./03-flange-hub/result.png" width="180" alt="Flange hub CADia result"> |
 
 ### 04 — Spur gear
 
 | Input drawing | CADia result |
 | --- | --- |
-| ![](./04-spur-gear/input-drawing.jpg) | ![](./04-spur-gear/result.png) |
+| <img src="./04-spur-gear/input-drawing.jpg" width="180" alt="Spur gear input drawing"> | <img src="./04-spur-gear/result.png" width="180" alt="Spur gear CADia result"> |

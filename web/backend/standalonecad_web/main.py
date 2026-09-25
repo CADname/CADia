@@ -17,7 +17,7 @@ from .config import settings
 from .database import SessionLocal, init_database
 from .models import User
 from .providers.app_server import app_server_manager
-from .routes import ai, auth, cad, manufacturing, mcp, projects
+from .routes import ai, auth, cad, manufacturing, mcp, projects, visual_cad
 from .routes.projects import owned_project
 from .schemas import PromptRequest
 
@@ -72,6 +72,7 @@ async def security_headers(request, call_next):
 app.include_router(auth.router, prefix=settings.api_prefix)
 app.include_router(projects.router, prefix=settings.api_prefix)
 app.include_router(cad.router, prefix=settings.api_prefix)
+app.include_router(visual_cad.router, prefix=settings.api_prefix)
 app.include_router(manufacturing.router, prefix=settings.api_prefix)
 app.include_router(ai.router, prefix=settings.api_prefix)
 app.include_router(mcp.router, prefix=settings.api_prefix)

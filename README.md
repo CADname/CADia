@@ -428,20 +428,20 @@ In a small internal evaluation using selected engineering drawings, approximatel
 <th>CADia reconstruction</th>
 </tr>
 <tr>
-<td align="center"><img src="./evidence/drawing-to-cad/01-pulley/input-drawing.jpg" width="280"></td>
-<td align="center"><img src="./evidence/drawing-to-cad/01-pulley/result.png" width="280"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/01-pulley/input-drawing.jpg" width="180"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/01-pulley/result.png" width="180"></td>
 </tr>
 <tr>
-<td align="center"><img src="./evidence/drawing-to-cad/02-piston/input-drawing.jpg" width="280"></td>
-<td align="center"><img src="./evidence/drawing-to-cad/02-piston/result.png" width="280"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/02-piston/input-drawing.jpg" width="180"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/02-piston/result.png" width="180"></td>
 </tr>
 <tr>
-<td align="center"><img src="./evidence/drawing-to-cad/03-flange-hub/input-drawing.jpg" width="280"></td>
-<td align="center"><img src="./evidence/drawing-to-cad/03-flange-hub/result.png" width="280"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/03-flange-hub/input-drawing.jpg" width="180"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/03-flange-hub/result.png" width="180"></td>
 </tr>
 <tr>
-<td align="center"><img src="./evidence/drawing-to-cad/04-spur-gear/input-drawing.jpg" width="280"></td>
-<td align="center"><img src="./evidence/drawing-to-cad/04-spur-gear/result.png" width="280"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/04-spur-gear/input-drawing.jpg" width="180"></td>
+<td align="center"><img src="./evidence/drawing-to-cad/04-spur-gear/result.png" width="180"></td>
 </tr>
 </table>
 
