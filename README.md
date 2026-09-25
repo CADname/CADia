@@ -445,6 +445,8 @@ In a small internal evaluation using selected engineering drawings, approximatel
 </tr>
 </table>
 
+At **cadia.co.kr**, click **Drawing → CAD** and upload an engineering drawing image to try it.
+
 ## Third-party software
 
 See `THIRD_PARTY.md`. Dependencies remain subject to their respective upstream licenses.
