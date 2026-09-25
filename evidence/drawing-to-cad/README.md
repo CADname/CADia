@@ -26,8 +26,6 @@ More difficult or ambiguous drawings can still result in:
 - disconnected intermediate solids
 - incorrect interpretation of ambiguous views, sections, or hidden geometry
 
-The examples below are successful cases and should not be interpreted as the success rate across arbitrary engineering drawings.
-
 ## Examples
 
 ### 01 — Pulley
