@@ -418,7 +418,7 @@ Drawing-to-CAD is still experimental. Difficult or ambiguous drawings can produc
 
 In a small internal evaluation using selected engineering drawings, approximately **50% of the tested cases produced end-to-end reconstructions that were considered sufficiently faithful to the source drawing**. This is an internal development measurement rather than a standardized benchmark, and performance varies substantially with drawing complexity and clarity.
 
-**Try it:** Upload an engineering drawing at https://cadia.co.kr.
+**Try it:** Upload an engineering drawing at https://app.cadia.co.kr.
 
 ### Drawing-to-CAD examples
 
@@ -445,7 +445,7 @@ In a small internal evaluation using selected engineering drawings, approximatel
 </tr>
 </table>
 
-At **cadia.co.kr**, click **Drawing → CAD** and upload an engineering drawing image to try it.
+At **app.cadia.co.kr**, click **Drawing → CAD** and upload an engineering drawing image to try it.
 
 ## Third-party software
 
