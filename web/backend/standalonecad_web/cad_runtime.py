@@ -159,23 +159,90 @@ class CadRuntime:
     def select(self, payload: dict[str, Any]) -> dict[str, Any]:
         with self.operation_lock, self.engine.lock:
             kind = payload.get("type")
+            mode = str(payload.get("mode") or "replace").lower()
+            if mode not in {"replace", "toggle", "clear"}:
+                raise ValueError(f"Unsupported selection mode: {mode}")
+
+            def build_multi_selection(kind_name: str, items: list[dict[str, Any]]) -> dict[str, Any]:
+                if not items:
+                    return {}
+                ref_key = "face_ref" if kind_name == "face" else "edge_ref"
+                refs_key = "face_refs" if kind_name == "face" else "edge_refs"
+                primary = items[-1]
+                out: dict[str, Any] = {
+                    "type": kind_name,
+                    ref_key: primary[ref_key],
+                    refs_key: [str(item[ref_key]) for item in items],
+                    "items": [dict(item) for item in items],
+                    "count": len(items),
+                }
+                if primary.get("occurrence_name"):
+                    out["occurrence_name"] = primary["occurrence_name"]
+                return out
+
+            def existing_items(kind_name: str) -> list[dict[str, Any]]:
+                current = dict(self.engine.selection or {})
+                if current.get("type") != kind_name:
+                    return []
+                ref_key = "face_ref" if kind_name == "face" else "edge_ref"
+                raw_items = current.get("items")
+                if isinstance(raw_items, list):
+                    normalized: list[dict[str, Any]] = []
+                    for raw in raw_items:
+                        if not isinstance(raw, dict) or not raw.get(ref_key):
+                            continue
+                        item = {"type": kind_name, ref_key: str(raw[ref_key])}
+                        if raw.get("occurrence_name"):
+                            item["occurrence_name"] = str(raw["occurrence_name"])
+                        normalized.append(item)
+                    if normalized:
+                        return normalized
+                if current.get(ref_key):
+                    item = {"type": kind_name, ref_key: str(current[ref_key])}
+                    if current.get("occurrence_name"):
+                        item["occurrence_name"] = str(current["occurrence_name"])
+                    return [item]
+                return []
+
+            def toggle_item(kind_name: str, item: dict[str, Any]) -> dict[str, Any]:
+                ref_key = "face_ref" if kind_name == "face" else "edge_ref"
+                items = existing_items(kind_name)
+                target_key = (str(item[ref_key]), item.get("occurrence_name") or None)
+                match_index = next(
+                    (
+                        index
+                        for index, existing in enumerate(items)
+                        if (str(existing[ref_key]), existing.get("occurrence_name") or None) == target_key
+                    ),
+                    None,
+                )
+                if match_index is None:
+                    items.append(item)
+                else:
+                    items.pop(match_index)
+                return build_multi_selection(kind_name, items)
+
             selection: dict[str, Any] = {}
-            if kind == "face" and payload.get("face_ref"):
+            if mode == "clear" or not kind:
+                selection = {}
+            elif kind == "face" and payload.get("face_ref"):
                 face_ref = str(payload["face_ref"])
                 occurrence_name = str(payload["occurrence_name"]) if payload.get("occurrence_name") else None
                 if not any(row["id"] == face_ref and row.get("occurrence_name") == occurrence_name for row in self.mesh(True)["faces"]):
                     raise ValueError("Could not find that face in the current model. Refresh the view.")
-                selection = {"type": "face", "face_ref": face_ref}
+                item: dict[str, Any] = {"type": "face", "face_ref": face_ref}
                 if occurrence_name:
-                    selection["occurrence_name"] = occurrence_name
+                    item["occurrence_name"] = occurrence_name
+                selection = toggle_item("face", item) if mode == "toggle" else build_multi_selection("face", [item])
             elif kind == "edge" and payload.get("edge_ref"):
                 edge_ref = str(payload["edge_ref"])
                 occurrence_name = str(payload["occurrence_name"]) if payload.get("occurrence_name") else None
                 if not any(row["id"] == edge_ref and row.get("occurrence_name") == occurrence_name for row in self.mesh(True)["edges"]):
                     raise ValueError("Could not find that edge in the current model. Refresh the view.")
-                selection = {"type": "edge", "edge_ref": edge_ref}
+                item = {"type": "edge", "edge_ref": edge_ref}
                 if occurrence_name:
-                    selection["occurrence_name"] = occurrence_name
+                    item["occurrence_name"] = occurrence_name
+                selection = toggle_item("edge", item) if mode == "toggle" else build_multi_selection("edge", [item])
             elif kind == "feature" and payload.get("feature_name"):
                 feature = self.engine.doc.find_feature(str(payload["feature_name"]))
                 selection = {"type": "feature", "feature_name": feature.name, "kind": feature.kind, "operation": feature.operation, "params": feature.params}

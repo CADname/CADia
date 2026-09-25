@@ -53,6 +53,7 @@ class SelectionRequest(BaseModel):
     edge_ref: str | None = None
     feature_name: str | None = None
     occurrence_name: str | None = None
+    mode: str | None = None
 
 
 class PromptRequest(BaseModel):

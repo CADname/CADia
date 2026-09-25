@@ -43,10 +43,26 @@ def planning_state(engine) -> dict[str, Any]:
         selection = dict(engine.selection)
         if selection.get("type") in ("face", "edge"):
             try:
-                ref = selection.get("face_ref") if selection.get("type") == "face" else selection.get("edge_ref")
-                prov = doc.selection_provenance(ref, selection.get("type")) if ref else None
+                selection_kind = str(selection.get("type"))
+                ref_key = "face_ref" if selection_kind == "face" else "edge_ref"
+                ref = selection.get(ref_key)
+                prov = doc.selection_provenance(ref, selection_kind) if ref else None
                 if prov:
                     selection["created_by_feature"] = prov
+
+                raw_items = selection.get("items")
+                if isinstance(raw_items, list):
+                    items: list[dict[str, Any]] = []
+                    for raw in raw_items:
+                        if not isinstance(raw, dict):
+                            continue
+                        item = dict(raw)
+                        item_ref = item.get(ref_key)
+                        item_prov = doc.selection_provenance(item_ref, selection_kind) if item_ref else None
+                        if item_prov:
+                            item["created_by_feature"] = item_prov
+                        items.append(item)
+                    selection["items"] = items
             except Exception:
                 pass
         return {

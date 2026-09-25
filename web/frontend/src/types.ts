@@ -17,10 +17,21 @@ export type DocumentSession = {
   dirty: boolean
 }
 
+export type SelectionItem = {
+  type: 'face' | 'edge'
+  face_ref?: string
+  edge_ref?: string
+  occurrence_name?: string
+}
+
 export type Selection = {
   type?: 'face' | 'edge' | 'feature' | 'occurrence' | 'part'
   face_ref?: string
   edge_ref?: string
+  face_refs?: string[]
+  edge_refs?: string[]
+  items?: SelectionItem[]
+  count?: number
   feature_name?: string
   occurrence_name?: string
   [key: string]: unknown

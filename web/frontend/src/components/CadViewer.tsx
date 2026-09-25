@@ -15,7 +15,7 @@ type Props = {
   sectionOffset: number
   orientation: string
   theme: 'dark' | 'light'
-  onSelect: (selection: Selection) => void
+  onSelect: (selection: Selection, additive?: boolean) => void
 }
 
 function occurrenceColor(name?: string | null): string {
@@ -32,7 +32,7 @@ const Face = memo(function Face({ face, selected, selectionMode, transparent, cl
   selectionMode: 'face' | 'edge' | 'object'
   transparent: boolean
   clipPlane: THREE.Plane | null
-  onSelect: (selection: Selection) => void
+  onSelect: (selection: Selection, additive?: boolean) => void
 }) {
   const geometry = useMemo(() => {
     const value = new THREE.BufferGeometry()
@@ -55,7 +55,10 @@ const Face = memo(function Face({ face, selected, selectionMode, transparent, cl
       }
       return
     }
-    onSelect({ type: 'face', face_ref: face.id, occurrence_name: face.occurrence_name || undefined })
+    onSelect(
+      { type: 'face', face_ref: face.id, occurrence_name: face.occurrence_name || undefined },
+      event.ctrlKey || event.shiftKey || event.metaKey,
+    )
   }
 
   return (
@@ -132,10 +135,24 @@ function pointSegmentDistance(px: number, py: number, ax: number, ay: number, bx
  * projected to screen pixels and the closest projected polyline is selected
  * using the same 0.8% viewport-diagonal tolerance concept.
  */
+function selectionContainsFace(selection: Selection, face: FaceMesh): boolean {
+  if (Array.isArray(selection.items)) {
+    return selection.items.some((item) => item.type === 'face' && item.face_ref === face.id && (!item.occurrence_name || item.occurrence_name === face.occurrence_name))
+  }
+  return selection.type === 'face' && selection.face_ref === face.id && (!selection.occurrence_name || selection.occurrence_name === face.occurrence_name)
+}
+
+function selectionContainsEdge(selection: Selection, edge: EdgeMesh): boolean {
+  if (Array.isArray(selection.items)) {
+    return selection.items.some((item) => item.type === 'edge' && item.edge_ref === edge.id && (!item.occurrence_name || item.occurrence_name === edge.occurrence_name))
+  }
+  return selection.type === 'edge' && selection.edge_ref === edge.id && (!selection.occurrence_name || selection.occurrence_name === edge.occurrence_name)
+}
+
 function EdgeScreenPicker({ mesh, enabled, onSelect, onHover }: {
   mesh: CadMesh | null
   enabled: boolean
-  onSelect: (selection: Selection) => void
+  onSelect: (selection: Selection, additive?: boolean) => void
   onHover: (key: string | null) => void
 }) {
   const { camera, gl } = useThree()
@@ -205,7 +222,10 @@ function EdgeScreenPicker({ mesh, enabled, onSelect, onHover }: {
         onSelect({})
         return
       }
-      onSelect({ type: 'edge', edge_ref: hit.edge.id, occurrence_name: hit.edge.occurrence_name || undefined })
+      onSelect(
+        { type: 'edge', edge_ref: hit.edge.id, occurrence_name: hit.edge.occurrence_name || undefined },
+        event.ctrlKey || event.shiftKey || event.metaKey,
+      )
       onHover(edgeKey(hit.edge))
       // Deliberately do not stop propagation: the desktop picker performs the
       // selection and still forwards the same press to the trackball camera.
@@ -326,10 +346,10 @@ export default function CadViewer(props: Props) {
         {showGrid && <Grid infiniteGrid fadeDistance={900} fadeStrength={3} cellSize={10} sectionSize={50} cellColor={theme === 'dark' ? '#242c37' : '#ccd3dc'} sectionColor={theme === 'dark' ? '#34445a' : '#abb8c8'} position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]} />}
         <group>
           {mesh?.faces.map((face) => (
-            <Face key={`${mesh.revision}-${face.occurrence_name || ''}-${face.id}`} face={face} selected={(selection.type === 'face' && selection.face_ref === face.id && (!selection.occurrence_name || selection.occurrence_name === face.occurrence_name)) || (selection.type === 'occurrence' && selection.occurrence_name === face.occurrence_name) || (selection.type === 'part' && !face.occurrence_name)} selectionMode={selectionMode} transparent={transparent} clipPlane={clipPlane} onSelect={onSelect} />
+            <Face key={`${mesh.revision}-${face.occurrence_name || ''}-${face.id}`} face={face} selected={selectionContainsFace(selection, face) || (selection.type === 'occurrence' && selection.occurrence_name === face.occurrence_name) || (selection.type === 'part' && !face.occurrence_name)} selectionMode={selectionMode} transparent={transparent} clipPlane={clipPlane} onSelect={onSelect} />
           ))}
           {(showEdges || selectionMode === 'edge') && mesh?.edges.map((edge) => (
-            <Edge key={`${mesh.revision}-${edge.occurrence_name || ''}-${edge.id}`} edge={edge} selected={selection.type === 'edge' && selection.edge_ref === edge.id && (!selection.occurrence_name || selection.occurrence_name === edge.occurrence_name)} hovered={selectionMode === 'edge' && hoveredEdge === edgeKey(edge)} />
+            <Edge key={`${mesh.revision}-${edge.occurrence_name || ''}-${edge.id}`} edge={edge} selected={selectionContainsEdge(selection, edge)} hovered={selectionMode === 'edge' && hoveredEdge === edgeKey(edge)} />
           ))}
         </group>
         <EdgeScreenPicker mesh={mesh} enabled={selectionMode === 'edge'} onSelect={onSelect} onHover={setHoveredEdge} />

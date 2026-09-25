@@ -204,9 +204,12 @@ export default function CadWorkspace({ user, onLogout }: Props) {
     } catch (reason) { showError(reason) }
   }
 
-  async function select(selection: Selection) {
+  async function select(selection: Selection, additive = false) {
     try {
-      const response = await api<{ state: CadState }>(`/api/projects/${projectId}/cad/select`, { method: 'POST', body: JSON.stringify(selection) })
+      const payload = Object.keys(selection).length === 0
+        ? { mode: 'clear' }
+        : { ...selection, mode: additive ? 'toggle' : 'replace' }
+      const response = await api<{ state: CadState }>(`/api/projects/${projectId}/cad/select`, { method: 'POST', body: JSON.stringify(payload) })
       setState(response.state)
     } catch (reason) { showError(reason) }
   }
@@ -268,7 +271,14 @@ export default function CadWorkspace({ user, onLogout }: Props) {
     }, 'image/png')
   }
 
-  const selectedLabel = state?.selection.type === 'face' ? state.selection.face_ref : state?.selection.type === 'edge' ? state.selection.edge_ref : state?.selection.type === 'part' ? (state.document?.title || 'Part') : state?.selection.feature_name || state?.selection.occurrence_name
+  const selectionCount = Number(state?.selection.count || 0)
+  const selectedLabel = state?.selection.type === 'face'
+    ? (selectionCount > 1 ? `${selectionCount} faces selected` : state.selection.face_ref)
+    : state?.selection.type === 'edge'
+      ? (selectionCount > 1 ? `${selectionCount} edges selected` : state.selection.edge_ref)
+      : state?.selection.type === 'part'
+        ? (state.document?.title || 'Part')
+        : state?.selection.feature_name || state?.selection.occurrence_name
   const volume = mesh?.stats.volume_mm3 || 0
 
   return (
@@ -288,7 +298,7 @@ export default function CadWorkspace({ user, onLogout }: Props) {
         <div className="tool-separator" />
         <div className="tool-group icon-only"><button disabled={!state?.undo_available || busy} title="Undo" onClick={() => command('undo')}><Undo2 size={18} /></button><button disabled={!state?.redo_available || busy} title="Redo" onClick={() => command('redo')}><Redo2 size={18} /></button></div>
         <div className="tool-separator" />
-        <div className="tool-group segmented"><button className={selectionMode === 'face' ? 'active' : ''} onClick={() => setSelectionMode('face')}><SquareMousePointer size={17} />Face</button><button className={selectionMode === 'edge' ? 'active' : ''} onClick={() => setSelectionMode('edge')}><Waypoints size={17} />Edge</button><button className={selectionMode === 'object' ? 'active' : ''} onClick={() => setSelectionMode('object')}><MousePointer2 size={17} />Object</button></div>
+        <div className="tool-group segmented"><button className={selectionMode === 'face' ? 'active' : ''} title="Face selection · Ctrl/Shift-click to add or remove" onClick={() => setSelectionMode('face')}><SquareMousePointer size={17} />Face</button><button className={selectionMode === 'edge' ? 'active' : ''} title="Edge selection · Ctrl/Shift-click to add or remove" onClick={() => setSelectionMode('edge')}><Waypoints size={17} />Edge</button><button className={selectionMode === 'object' ? 'active' : ''} onClick={() => setSelectionMode('object')}><MousePointer2 size={17} />Object</button></div>
         <div className="tool-separator" />
         <div className="tool-group icon-only"><button className={showGrid ? 'active' : ''} title="Grid" onClick={() => setShowGrid(!showGrid)}><Grid3X3 size={18} /></button><button className={showEdges ? 'active' : ''} title="Show edges" onClick={() => setShowEdges(!showEdges)}><ScanLine size={18} /></button><button className={transparent ? 'active' : ''} title="Transparency" onClick={() => setTransparent(!transparent)}><View size={18} /></button></div>
         <div className="tool-separator" />
