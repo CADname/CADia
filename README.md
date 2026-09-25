@@ -444,7 +444,6 @@ In a small internal evaluation using selected engineering drawings, approximatel
 <td align="center"><img src="./evidence/drawing-to-cad/04-spur-gear/result.png" width="280"></td>
 </tr>
 </table>
-These examples are successful cases and do not represent the full distribution of drawing difficulty. Partial and failed cases are retained during development to improve reconstruction reliability.
 
 ## Third-party software
 
