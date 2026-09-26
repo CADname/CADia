@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import base64
+import hashlib
+import logging
+import re
 import uuid
 from pathlib import Path
 
@@ -15,10 +19,12 @@ from ..manufacturing import analyze_print_dfm, manufacturing_capabilities, write
 from ..manufacturing.printers import PrinterError, configured_printers, upload_gcode
 from ..manufacturing.slicer import SlicerError, configured_build_volume_mm, slice_stl
 from ..manufacturing.step_export import write_step_ap242
+from ..manufacturing.slant3d import Slant3DConfig, Slant3DError, call_slant_tool, list_materials
 from .cad import runtime_for
 
 
 router = APIRouter(prefix="/projects/{project_id}/manufacturing", tags=["manufacturing"])
+logger = logging.getLogger(__name__)
 
 
 class SliceRequest(BaseModel):
@@ -28,6 +34,91 @@ class SliceRequest(BaseModel):
 class SliceUploadRequest(BaseModel):
     overrides: dict[str, str] = Field(default_factory=dict)
     start: bool = False
+
+
+class SlantQuoteRequest(BaseModel):
+    filament_id: str | None = Field(default=None, max_length=200)
+    material: str | None = Field(default=None, max_length=80)
+    color: str | None = Field(default=None, max_length=80)
+
+
+class SlantQuantityRequest(BaseModel):
+    quote_id: str = Field(min_length=1, max_length=200)
+    quantity: int = Field(ge=1, le=100000)
+
+
+class SlantAddress(BaseModel):
+    # Keep request parsing permissive enough to return human-readable validation
+    # errors from the route instead of FastAPI's nested 422 objects.
+    name: str = Field(default="", max_length=160)
+    email: str = Field(default="", max_length=320)
+    line1: str = Field(default="", max_length=200)
+    line2: str | None = Field(default=None, max_length=200)
+    city: str = Field(default="", max_length=120)
+    state: str | None = Field(default=None, max_length=120)
+    postal_code: str = Field(default="", max_length=40)
+    country: str = Field(default="", max_length=2)
+
+
+class SlantShippingRequest(BaseModel):
+    quote_id: str = Field(min_length=1, max_length=200)
+    address: SlantAddress
+
+
+class SlantCheckoutRequest(BaseModel):
+    quote_id: str = Field(min_length=1, max_length=200)
+    shipping_service: str = Field(min_length=1, max_length=200)
+    email: str | None = Field(default=None, max_length=320)
+
+
+def _clean_slant_address(address: SlantAddress) -> dict[str, str | None]:
+    values: dict[str, str | None] = {
+        "name": address.name.strip(),
+        "email": address.email.strip(),
+        "line1": address.line1.strip(),
+        "line2": (address.line2 or "").strip() or None,
+        "city": address.city.strip(),
+        "state": (address.state or "").strip() or None,
+        "postal_code": address.postal_code.strip(),
+        "country": address.country.strip().upper(),
+    }
+    required = {
+        "name": "recipient name",
+        "email": "email address",
+        "line1": "street address",
+        "city": "city",
+        "postal_code": "postal code",
+        "country": "country",
+    }
+    missing = [label for key, label in required.items() if not values[key]]
+    if missing:
+        raise HTTPException(status_code=400, detail="Enter " + ", ".join(missing) + ".")
+    email = str(values["email"])
+    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
+        raise HTTPException(status_code=400, detail="Enter a valid email address.")
+    country = str(values["country"])
+    if not re.match(r"^[A-Z]{2}$", country):
+        raise HTTPException(status_code=400, detail="Country must be a 2-letter ISO code.")
+    state = str(values["state"] or "")
+    if len(state) < 2:
+        raise HTTPException(status_code=400, detail="Enter a state, province, or region (at least 2 characters).")
+    postal_code = str(values["postal_code"] or "")
+    if len(postal_code) < 3:
+        raise HTTPException(status_code=400, detail="Enter a valid postal code (at least 3 characters).")
+    return values
+
+
+def _provider_error(exc: Slant3DError, action: str) -> HTTPException:
+    # Keep provider protocol/schema diagnostics in server logs, never in the end-user UI.
+    logger.warning("Slant 3D %s failed: %s", action, exc)
+    messages = {
+        "materials": "Could not load the available production materials. Please try again.",
+        "quote": "The production quote could not be calculated. Check the model and material selection, then try again.",
+        "quantity": "The quantity price could not be updated. Please try again.",
+        "shipping": "Shipping could not be calculated for this address. Check the state/region and postal code, then try again.",
+        "checkout": "The checkout link could not be prepared. Please try again.",
+    }
+    return HTTPException(status_code=502, detail=messages.get(action, "The production provider could not complete this request. Please try again."))
 
 
 def _export_dir(runtime) -> Path:
@@ -48,8 +139,8 @@ def _effective_build_volume(
     build_z: float | None = None,
 ) -> tuple[float, float, float]:
     # Keep DFM and slicing on the same source of truth. Explicit query values
-    # remain available for ad-hoc checks; omitted values come from the configured
-    # slicer profile.
+    # remain available for ad-hoc checks, but omitted values come from the
+    # configured slicer profile instead of the old 256 mm hard-coded default.
     configured = configured_build_volume_mm() or (256.0, 256.0, 256.0)
     return (
         float(build_x) if build_x is not None else configured[0],
@@ -160,3 +251,117 @@ def slice_and_upload(
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except Exception as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+@router.get("/fulfillment/slant3d/materials")
+def slant3d_materials(project_id: str, user: CurrentUser, db: Session = Depends(get_db)):
+    runtime_for(project_id, user, db)
+    try:
+        return {"provider": "Slant 3D", "materials": list_materials()}
+    except Slant3DError as exc:
+        raise _provider_error(exc, "materials") from exc
+
+
+@router.post("/fulfillment/slant3d/quote")
+def slant3d_quote(
+    project_id: str,
+    payload: SlantQuoteRequest,
+    user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    runtime = runtime_for(project_id, user, db)
+    cfg = Slant3DConfig.from_env()
+    try:
+        mesh = runtime.mesh(include_edges=False)
+        dfm = analyze_print_dfm(mesh, build_volume_mm=(220.0, 220.0, 220.0))
+        if not dfm.get("ok"):
+            failures = [row.get("message", "DFM precheck failed") for row in dfm.get("checks", []) if row.get("status") == "fail"]
+            raise HTTPException(status_code=422, detail="Slant 3D preflight failed: " + "; ".join(failures))
+        stl = runtime.export("stl")
+        raw = stl.read_bytes()
+        if len(raw) > cfg.max_stl_bytes:
+            raise HTTPException(status_code=413, detail=f"STL is too large for live quote upload ({len(raw)} bytes; limit {cfg.max_stl_bytes}).")
+        encoded = base64.b64encode(raw).decode("ascii")
+        quote = call_slant_tool(
+            "quote_upload_part",
+            {
+                "stl_base64": encoded,
+                "filename": stl.name,
+                "filament_id": payload.filament_id,
+                "material": payload.material,
+                "color": payload.color,
+            },
+        )
+        return {
+            "provider": "Slant 3D",
+            "demo_mode": cfg.demo_mode,
+            "model": {
+                "filename": stl.name,
+                "bytes": len(raw),
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "size_mm": (dfm.get("metrics") or {}).get("size_mm"),
+            },
+            "dfm": dfm,
+            "quote": quote,
+        }
+    except HTTPException:
+        raise
+    except Slant3DError as exc:
+        raise _provider_error(exc, "quote") from exc
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@router.post("/fulfillment/slant3d/quantity")
+def slant3d_quantity(
+    project_id: str,
+    payload: SlantQuantityRequest,
+    user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    runtime_for(project_id, user, db)
+    try:
+        result = call_slant_tool("quote_set_quantity", {"quote_id": payload.quote_id, "quantity": payload.quantity})
+        return {"provider": "Slant 3D", "quantity": payload.quantity, "result": result}
+    except Slant3DError as exc:
+        raise _provider_error(exc, "quantity") from exc
+
+
+@router.post("/fulfillment/slant3d/shipping")
+def slant3d_shipping(
+    project_id: str,
+    payload: SlantShippingRequest,
+    user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    runtime_for(project_id, user, db)
+    values = {"quote_id": payload.quote_id, **_clean_slant_address(payload.address)}
+    try:
+        result = call_slant_tool("quote_shipping_options", values)
+        return {"provider": "Slant 3D", "result": result}
+    except Slant3DError as exc:
+        raise _provider_error(exc, "shipping") from exc
+
+
+@router.post("/fulfillment/slant3d/checkout")
+def slant3d_checkout(
+    project_id: str,
+    payload: SlantCheckoutRequest,
+    user: CurrentUser,
+    db: Session = Depends(get_db),
+):
+    runtime_for(project_id, user, db)
+    cfg = Slant3DConfig.from_env()
+    if cfg.demo_mode:
+        raise HTTPException(status_code=403, detail="Checkout is disabled in the CADia hackathon demo. No order or payment was created.")
+    try:
+        result = call_slant_tool(
+            "quote_checkout",
+            {
+                "quote_id": payload.quote_id,
+                "shipping_service": payload.shipping_service,
+                "email": payload.email,
+            },
+        )
+        return {"provider": "Slant 3D", "result": result}
+    except Slant3DError as exc:
+        raise _provider_error(exc, "checkout") from exc

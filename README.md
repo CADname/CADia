@@ -15,6 +15,7 @@
 - **Judge quickstart:** [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md)
 - **Demo 1 workflow:** [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md)
 - **Demo 2 editing workflow:** [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md)
+- **Print & Ship implementation:** [`docs/PRINT_AND_SHIP.md`](./docs/PRINT_AND_SHIP.md)
 
 **Supporting materials**
 - **Modeling evidence:** [`evidence/`](./evidence/README.md)
@@ -226,7 +227,7 @@ mindmap
     Output layer
       STEP / STL / 3MF
       DFM / G-code
-      Future web-to-print partner flow
+      Live production quote / shipping flow
 ```
 
 This is the difference between generating a 3D object once and maintaining an editable engineering model through repeated design changes.
@@ -285,12 +286,59 @@ CADia can connect ChatGPT/Codex, GitHub Copilot, OpenAI API, Claude or Gemini. P
 
 ### Manufacturing path
 
-The web application includes STEP AP242, STL and 3MF export, 3D-print DFM checks, and PrusaSlicer-based G-code generation.
+The web application includes STEP AP242, STL and 3MF export, 3D-print DFM checks, PrusaSlicer-based G-code generation, direct printer delivery, and a live production-fulfillment path.
 
-### Web-to-print expansion path
+### From CAD to physical production
 
-CADia is deployed as a web application, so the long-term direction is CAD creation from anywhere rather than only on a local desktop CAD workstation. A non-specialist user can describe a part, receive an editable CAD model, export STL/3MF files, and in a future workflow connect those files to regional 3D-printing or prototyping providers to receive physical outputs. The same web-first architecture can also support improved phone/tablet workflows and native app packaging.
+CADia does not stop at generating a CAD file. The same browser workflow can connect the current editable B-Rep model to real-world manufacturing.
 
+```text
+Natural-language request
+        ↓
+Editable B-Rep CAD
+        ↓
+Continuous design refinement
+        ↓
+Manufacturing preflight / DFM
+        ↓
+STL generation
+        ↓
+Material / color / quantity selection
+        ↓
+Live production quote
+        ↓
+Shipping options
+        ↓
+Physical production path
+```
+
+The **Print & Ship** workflow connects CADia to the public Slant 3D MCP service. Available production materials and colors are loaded from the provider, while the current CAD model is converted to STL and checked for printability before a live production quote is requested.
+
+Users can then choose production quantity and calculate destination-based shipping without leaving the CAD workspace. Provider identifiers, MCP payloads, and protocol details remain internal to the application.
+
+For the hackathon deployment, payment and final order submission are intentionally disabled server-side. Live manufacturing quotes and shipping calculation are implemented while unintended purchases are prevented.
+
+The integration is implemented as a provider layer on top of CADia's existing manufacturing subsystem:
+
+```text
+Editable OCCT B-Rep
+        ↓
+CADia manufacturing runtime
+        ↓
+STL generation + DFM preflight
+        ↓
+Slant 3D MCP adapter
+        ↓
+Live materials / quote / quantity / shipping
+```
+
+Implementation details and endpoint flow are documented in [`docs/PRINT_AND_SHIP.md`](./docs/PRINT_AND_SHIP.md).
+
+The broader goal is to reduce the distance between an idea and a physical object:
+
+> **Describe it → Design it → Refine it → Verify it → Manufacture it**
+
+CADia is designed so that a non-specialist can move from a natural-language idea to editable engineering geometry and toward a physically manufactured part through one browser-based workflow.
 ## Try it
 
 1. Open https://app.cadia.co.kr.
@@ -298,6 +346,7 @@ CADia is deployed as a web application, so the long-term direction is CAD creati
 3. Inspect the CAD workspace, feature tree, selection modes and export controls.
 4. Click **Connect AI** to run live AI modeling with a supported provider.
 5. Enter a design request, then make a follow-up modification to the same model.
+6. Open **Manufacture → Print & Ship** to select a production material, request a live manufacturing quote, and calculate shipping for the current model.
 
 Live AI modeling uses the selected provider connection. The guest CAD workspace can also be inspected without connecting an AI account.
 
@@ -359,18 +408,19 @@ The browser mesh is only a visualization of the CAD state; it is not the source 
 - AI integration: Codex App Server, GitHub Copilot SDK, OpenAI API, Anthropic API, Gemini API
 - Tool interface: MCP-compatible project-scoped CAD gateway
 - Deployment: Docker Compose, Nginx, AWS Lightsail
-- Manufacturing: STEP AP242 export, STL/3MF, 3D-print DFM, PrusaSlicer-based slicing/G-code
+- Manufacturing: STEP AP242, STL/3MF, 3D-print DFM, PrusaSlicer-based slicing/G-code, printer delivery, and Slant 3D live production quoting/shipping via MCP
 
 ## Repository map
 
 ```text
 src/standalonecad/       CAD engine package (internal Python namespace), history, topology, assemblies, joints, verifier/recovery
-web/backend/             FastAPI, auth, projects, AI providers, manufacturing and MCP gateway
-web/frontend/            React/Three.js judging and CAD interface
+web/backend/             FastAPI, auth, projects, AI providers, manufacturing, Slant 3D fulfillment and MCP gateway
+web/frontend/            React/Three.js CAD interface, manufacturing controls and Print & Ship workflow
 tools/                   Web/MCP bridges
 scripts/                 Local utilities
 deploy/                  Deployment and Nginx helpers
 docs/                    Judge guide, architecture and demo walkthroughs
+docs/PRINT_AND_SHIP.md  CAD-to-production architecture, live quoting and shipping workflow
 SUBMISSION_SCOPE.md      InfinityX submission scope and submitted capability summary
 ```
 
@@ -397,6 +447,7 @@ Never commit a real `.env` file or provider credentials.
 - [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
 - [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md) — creation, assembly and manufacturing-handoff demo
 - [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
+- [`docs/PRINT_AND_SHIP.md`](./docs/PRINT_AND_SHIP.md) — Print & Ship implementation and endpoint flow
 - [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
 - [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
 

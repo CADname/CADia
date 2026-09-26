@@ -5,6 +5,7 @@ import importlib.util
 from .cam import opencamlib_capability
 from .printers import configured_printers
 from .slicer import slicer_capability
+from .slant3d import slant3d_capability
 
 
 def manufacturing_capabilities() -> dict:
@@ -24,6 +25,9 @@ def manufacturing_capabilities() -> dict:
             },
             "slicer": slicer_capability(),
             "cam": opencamlib_capability(),
+        },
+        "fulfillment": {
+            "slant3d": slant3d_capability(),
         },
         "printers": [
             {

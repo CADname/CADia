@@ -38,7 +38,20 @@ Change the plate thickness to 12 mm and the four holes to 8 mm diameter while pr
 
 Inspect that the second request edits the existing CAD state rather than starting a new one. Faces and edges remain selectable, and the model can be exported through STEP.
 
-## 3. Inspect saved modeling evidence
+## 3. Test Print & Ship
+
+With a CAD model open:
+
+1. Open **Manufacture → Print & Ship**.
+2. Select a production material, color, and quantity.
+3. Click **Get Production Quote** to run CADia's DFM preflight, export the current model to STL, and request live production pricing.
+4. Enter a delivery destination and click **Calculate Shipping** to retrieve available shipping options.
+
+The workflow uses the same current CAD model that was created or edited in CADia. The public hackathon deployment intentionally blocks final checkout/payment server-side, so testing the live quote and shipping path cannot create an unintended order.
+
+Implementation details: [`PRINT_AND_SHIP.md`](./PRINT_AND_SHIP.md).
+
+## 4. Inspect saved modeling evidence
 
 Open [`../evidence/README.md`](../evidence/README.md). It indexes 22 saved modeling examples with the exact prompt and available preview / STEP AP242 / STEP / STL / 3MF / 3D-print G-code artifacts.
 
@@ -51,7 +64,7 @@ Suggested examples:
 - `19-clock-assembly` — multi-component clock with hands and numerals
 - `20-tumbler-assembly` — product-style assembly
 
-## 4. Technical path
+## 5. Technical path
 
 CADia separates language interpretation from geometry execution:
 
@@ -66,11 +79,11 @@ Natural-language request + CAD state + direct selection
 
 For the component-level view, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 
-## 5. Where the InfinityX criteria are visible
+## 6. Where the InfinityX criteria are visible
 
 - **Innovation & Creativity:** natural-language creation plus continued editing of real B-Rep CAD rather than one-shot mesh generation
 - **Technical Implementation:** typed CAD operations, persistent topology, feature/history-aware edits, direct B-Rep editing, verification/recovery, assemblies and manufacturing export
-- **Real-World Impact:** lower-friction CAD creation and modification for engineering workflows
+- **Real-World Impact:** lower-friction CAD creation plus a live path from editable CAD through DFM, production pricing and shipping toward a physical manufactured part
 - **User Experience & Design:** browser CAD workspace, direct geometric selection, guest access and follow-up editing
 - **Scalability & Feasibility:** provider-independent CAD core, project-scoped execution and containerized deployment
 - **Presentation & Demo:** live deployment, saved modeling evidence and demo-video workflow
