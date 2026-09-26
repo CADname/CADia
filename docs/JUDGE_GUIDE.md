@@ -1,19 +1,19 @@
-﻿# Judge Guide
+# Judge Guide
 
 CADia is submitted to **InfinityX Global Hackathon 2K26**. This guide is the shortest path to evaluating the working product and the supporting repository evidence.
 
 ## Demo videos
 
-- **Demo Video 1 ??creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4  
+- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4  
   Walkthrough: [`DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md)
-- **Demo Video 2 ??topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4  
+- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4  
   Walkthrough: [`DEMO_02_TOPOLOGY_EDITING.md`](./DEMO_02_TOPOLOGY_EDITING.md)
 
 Demo Video 1 shows the broader browser-based CAD workflow: creating a bevel gear, adding a matching second gear as a separate part, assembling the gears at a 90-degree shaft angle, adding 10 mm through bores while preserving the existing gear geometry and assembly, and then creating a product-style computer mouse model.
 
 Demo Video 2 focuses on continued editing of the same B-Rep model. A mechanical mounting bracket is built incrementally and then modified through direct face and edge selection.
 
-The second demo shows a center-hole diameter change from 횠40 mm to 횠50 mm, vertical-plate thickness modification from 8 mm to 12 mm, a selected-edge 5 mm fillet, a selected-edge 3 mm chamfer, B-Rep regeneration, and verification.
+The second demo shows a center-hole diameter change from Ø40 mm to Ø50 mm, vertical-plate thickness modification from 8 mm to 12 mm, a selected-edge 5 mm fillet, a selected-edge 3 mm chamfer, B-Rep regeneration, and verification.
 
 ## 1. Open the live product
 
@@ -42,7 +42,7 @@ Inspect that the second request edits the existing CAD state rather than startin
 
 With a CAD model open:
 
-1. Open **Manufacture ??Print & Ship**.
+1. Open **Manufacture → Print & Ship**.
 2. Select a production material, color, and quantity.
 3. Click **Get Production Quote** to run CADia's DFM preflight, export the current model to STL, and request live production pricing.
 4. Enter a delivery destination and click **Calculate Shipping** to retrieve available shipping options.
@@ -57,15 +57,15 @@ Open [`../evidence/README.md`](../evidence/README.md). It indexes 29 saved model
 
 Suggested examples:
 
-- `01-spur-gear` ??parametric mechanical component
-- `03-spur-gear-assembly` ??multi-part gear assembly
-- `10-u-shaped-bracket` ??compound bracket geometry
-- `18-laptop-assembly` ??larger assembly
-- `19-clock-assembly` ??multi-component clock with hands and numerals
-- `20-tumbler-assembly` ??product-style assembly
-- 23-geneva-mechanism ??intermittent-motion mechanism
-- 26-universal-joint-assembly ??multi-axis mechanical assembly
-- 28-flange-coupling-assembly ??bolted shaft-coupling assembly
+- `01-spur-gear` — parametric mechanical component
+- `03-spur-gear-assembly` — multi-part gear assembly
+- `10-u-shaped-bracket` — compound bracket geometry
+- `18-laptop-assembly` — larger assembly
+- `19-clock-assembly` — multi-component clock with hands and numerals
+- `20-tumbler-assembly` — product-style assembly
+- `23-geneva-mechanism` — intermittent-motion mechanism
+- `26-universal-joint-assembly` — multi-axis mechanical assembly
+- `28-flange-coupling-assembly` — bolted shaft-coupling assembly
 
 ## 5. Technical path
 
@@ -94,4 +94,3 @@ For the component-level view, see [`ARCHITECTURE.md`](./ARCHITECTURE.md).
 ## Access note
 
 No separate CADia judge account is required for the guest workspace. Live AI generation uses the connected AI provider's authentication and usage limits.
-
