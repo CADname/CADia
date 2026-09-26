@@ -339,6 +339,32 @@ The broader goal is to reduce the distance between an idea and a physical object
 > **Describe it → Design it → Refine it → Verify it → Manufacture it**
 
 CADia is designed so that a non-specialist can move from a natural-language idea to editable engineering geometry and toward a physically manufactured part through one browser-based workflow.
+
+### Expansion roadmap
+
+The current **Print & Ship** implementation is the first real production-provider integration built on CADia's manufacturing layer. The architecture is designed so that CADia is not tied to a single provider or a single manufacturing process.
+
+```text
+Editable CAD model
+        ??CADia manufacturing system
+        ??DFM / manufacturing validation
+        ??Manufacturing provider integrations
+        ?쒋?? 3D printing
+        ?쒋?? CNC machining
+        ?쒋?? Sheet-metal fabrication
+        ?쒋?? Laser cutting
+        ?붴?? Additional prototyping services
+        ??Price / lead time / material comparison
+        ??Provider selection
+        ??Ordering and delivery
+```
+
+In the future, CADia can connect the same editable CAD model and workflow to multiple manufacturing providers, compare **price, lead time, materials, and manufacturing processes**, and help users select an appropriate production route.
+
+The architecture can also be extended into a **DFM feedback loop**. If a provider or manufacturing process identifies a production constraint, CADia could feed that constraint back into the editable model, help revise the design, and request a new quote.
+
+> **Idea ??Editable CAD ??Engineering validation ??Manufacturing process/provider selection ??Physical product**
+
 ## Try it
 
 1. Open https://app.cadia.co.kr.
