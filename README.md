@@ -1,13 +1,13 @@
-# CADia — Browser-Based AI-Native Editable CAD
+﻿# CADia ??Browser-Based AI-Native Editable CAD
 
-> Turn any browser into an editable AI CAD workspace — no heavy desktop CAD installation required.  
+> Turn any browser into an editable AI CAD workspace ??no heavy desktop CAD installation required.  
 > Create, select, revise, and export real B-Rep CAD models from anywhere with natural language.
 
 **Live demo:** https://app.cadia.co.kr
 
 **Demo videos**
-- **Demo Video 1 — creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
-- **Demo Video 2 — topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
+- **Demo Video 1 ??creation, assembly, and manufacturing handoff:** https://youtu.be/L2ocXoW0v_4
+- **Demo Video 2 ??topology-aware parametric editing:** https://youtu.be/bsyfQU5MiZ4
 
 **Hackathon:** InfinityX Global Hackathon 2K26
 
@@ -53,11 +53,11 @@ then, on the same model:
 Change the plate thickness to 12 mm and the four holes to 8 mm diameter while preserving their offsets.
 ```
 
-The [`evidence/`](./evidence/README.md) directory contains 22 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
+The [`evidence/`](./evidence/README.md) directory contains 29 saved examples with their exact prompts, preview images and available CAD/manufacturing exports.
 
 ## Modeling evidence
 
-The [`evidence/`](./evidence/README.md) directory contains **22 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
+The [`evidence/`](./evidence/README.md) directory contains **29 CAD modeling examples** with the exact English prompt used for each run and the exported artifacts that were available from that run. Depending on the case, this includes preview images, STEP / STEP AP242, STL, 3MF, and PrusaSlicer-generated 3D-print G-code.
 
 These files provide concrete modeling evidence for CADia's implemented capabilities.
 
@@ -294,21 +294,21 @@ CADia does not stop at generating a CAD file. The same browser workflow can conn
 
 ```text
 Natural-language request
-        ↓
+        ??
 Editable B-Rep CAD
-        ↓
+        ??
 Continuous design refinement
-        ↓
+        ??
 Manufacturing preflight / DFM
-        ↓
+        ??
 STL generation
-        ↓
+        ??
 Material / color / quantity selection
-        ↓
+        ??
 Live production quote
-        ↓
+        ??
 Shipping options
-        ↓
+        ??
 Physical production path
 ```
 
@@ -322,13 +322,13 @@ The integration is implemented as a provider layer on top of CADia's existing ma
 
 ```text
 Editable OCCT B-Rep
-        ↓
+        ??
 CADia manufacturing runtime
-        ↓
+        ??
 STL generation + DFM preflight
-        ↓
+        ??
 Slant 3D MCP adapter
-        ↓
+        ??
 Live materials / quote / quantity / shipping
 ```
 
@@ -336,7 +336,7 @@ Implementation details and endpoint flow are documented in [`docs/PRINT_AND_SHIP
 
 The broader goal is to reduce the distance between an idea and a physical object:
 
-> **Describe it → Design it → Refine it → Verify it → Manufacture it**
+> **Describe it ??Design it ??Refine it ??Verify it ??Manufacture it**
 
 CADia is designed so that a non-specialist can move from a natural-language idea to editable engineering geometry and toward a physically manufactured part through one browser-based workflow.
 
@@ -384,7 +384,7 @@ The architecture can also be extended into a **DFM feedback loop**. If a provide
 3. Inspect the CAD workspace, feature tree, selection modes and export controls.
 4. Click **Connect AI** to run live AI modeling with a supported provider.
 5. Enter a design request, then make a follow-up modification to the same model.
-6. Open **Manufacture → Print & Ship** to select a production material, request a live manufacturing quote, and calculate shipping for the current model.
+6. Open **Manufacture ??Print & Ship** to select a production material, request a live manufacturing quote, and calculate shipping for the current model.
 
 Live AI modeling uses the selected provider connection. The guest CAD workspace can also be inspected without connecting an AI account.
 
@@ -482,14 +482,14 @@ Never commit a real `.env` file or provider credentials.
 
 ## Hackathon submission materials
 
-- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) — short evaluation path for judges
-- [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md) — creation, assembly and manufacturing-handoff demo
-- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) — topology-aware parametric editing demo
-- [`docs/PRINT_AND_SHIP.md`](./docs/PRINT_AND_SHIP.md) — Print & Ship implementation and endpoint flow
-- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) — Devpost submission copy
-- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) — submitted capability scope and evaluation summary
+- [`docs/JUDGE_GUIDE.md`](./docs/JUDGE_GUIDE.md) ??short evaluation path for judges
+- [`docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md`](./docs/DEMO_01_CREATION_ASSEMBLY_MANUFACTURING.md) ??creation, assembly and manufacturing-handoff demo
+- [`docs/DEMO_02_TOPOLOGY_EDITING.md`](./docs/DEMO_02_TOPOLOGY_EDITING.md) ??topology-aware parametric editing demo
+- [`docs/PRINT_AND_SHIP.md`](./docs/PRINT_AND_SHIP.md) ??Print & Ship implementation and endpoint flow
+- [`DEVPOST_SUBMISSION.md`](./DEVPOST_SUBMISSION.md) ??Devpost submission copy
+- [`SUBMISSION_SCOPE.md`](./SUBMISSION_SCOPE.md) ??submitted capability scope and evaluation summary
 
-## Engineering drawing → editable CAD (experimental)
+## Engineering drawing ??editable CAD (experimental)
 
 CADia can also use engineering drawings as visual design input and attempt to reconstruct them as editable B-Rep CAD models. The workflow analyzes visible dimensions, profiles, sections, holes, grooves, and other geometric information in the drawing, then routes the reconstructed model into the same CADia editing and export workflow used for natural-language modeling.
 
@@ -534,8 +534,9 @@ In a small internal evaluation using selected engineering drawings, approximatel
 </tr>
 </table>
 
-At **app.cadia.co.kr**, click **Drawing → CAD** and upload an engineering drawing image to try it.
+At **app.cadia.co.kr**, click **Drawing ??CAD** and upload an engineering drawing image to try it.
 
 ## Third-party software
 
 See `THIRD_PARTY.md`. Dependencies remain subject to their respective upstream licenses.
+
